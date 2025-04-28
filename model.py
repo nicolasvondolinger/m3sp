@@ -93,6 +93,7 @@ def build_and_solve(instance_data):
             )
 
     model.optimize()
+    model.write("model.lp")
 
     if model.status == GRB.OPTIMAL:
         print("\n--- Optimal Solution Found ---\n")
