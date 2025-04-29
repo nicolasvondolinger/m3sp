@@ -68,7 +68,7 @@ def parse_instance(file_path):
         "L": [(i+1, i+1) for i in range(n_connections)],  # Links
         "T": list(range(1, n_time_slots+1)),  # Time slots 
         "C": list(range(1, n_spectrums+1)),  # Channels
-        "spectrums": spectrums,  # This is the key that was missing
+        "spectrums": spectrums,  # Bandwidth spectrums
         "sinrs": sinrs,  # SINR requirements
         "rates": rates,  # Data rates
         "R": [(b, s) for b in spectrums for s in sinrs],  # Bandwidth-SINR combinations
@@ -85,7 +85,8 @@ def parse_instance(file_path):
         "N": noise,  # Noise power
         "n_connections": n_connections  # Number of connections
     }
-    
+    assert len(spectrums) == n_spectrums, "Número de espectros não coincide"
+    assert len(sender_positions) == n_connections, "Número de emissores incorreto"
     return instance_data
 
 def solve_instance(instance_data):
