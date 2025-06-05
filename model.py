@@ -79,19 +79,21 @@ def build_and_solve(instance_data):
                 name=f"speed_bandwidth_{i}_{j}_{b}_{s}"
             )
 
-    # # (7) - A device cannot operate in more than one link in a given time interval
+    # (7) - A device cannot operate in more than one link in a given time interval
     # for i in V:
     #     for t in T:
     #         model.addConstr(
     #             gp.quicksum(x_tc[i2,j,t,c] for (i2, j) in L if i2 == i for c in C) +
-    #             gp.quicksum(x_tc[j,i2,t,c] for (j, i2) in L if i2 == i for c in C) <= 1,
+    #             gp.quicksum(x_tc[j,i2,t,c] for (j, i2) in L if i2 == i for c in C) <= 2,
     #             name=f"one_link_per_device_{i}_time_{t}"
     #         )
 
+    model.setParam('OutputFlag', 1)
     model.optimize()
-    model.write("model.lp")
+    
+    # model.write("model.lp")
 
-    if model.status == GRB.OPTIMAL:
+    if model.Status == GRB.OPTIMAL:
         print("\n--- Optimal Solution Found ---\n")
         for (i, j, t, c) in x_tc.keys():
             if x_tc[i,j,t,c].X > 0.5:
@@ -100,9 +102,7 @@ def build_and_solve(instance_data):
             if y_bs[i,j,b,s].X > 0.5:
                 print(f"Link ({i},{j}) transmits at speed {rbs[(b,s)]} Mbps with bandwidth {b} MHz and SINR ≥ {s} dBm")
     else:
-        print("\nNo optimal solution found.")
-
-    if model.Status == GRB.INFEASIBLE:
+        print("\nNo optimal solution found.\n")
         print("\n--- Compute ISS ---\n")
         model.computeIIS()
         model.write("iismodel.ilp")
@@ -116,5 +116,8 @@ def build_and_solve(instance_data):
         for v in model.getVars():
             if v.IISLB or v.IISUB:
                 print(f"  - {v.VarName}")
+
+    print("\n")
+    model.printQuality()
 
     return model
