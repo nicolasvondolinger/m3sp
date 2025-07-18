@@ -96,6 +96,19 @@ struct Spectrum {
     }
 };
 
+struct TimeSlot {
+    vector<Spectrum> spectrums;
+    double interference;
+    double throughput;
+
+    TimeSlot(const vector<Spectrum> sp) : spectrums(sp) {}
+    TimeSlot() {
+        interference = 0.0;
+        throughput = 0.0;
+        spectrums = vector<Spectrum>();
+    }
+};
+
 double convertDBMToMW(double value) {
     // dBm dividido por 10
     // Converte de DBm para mW
