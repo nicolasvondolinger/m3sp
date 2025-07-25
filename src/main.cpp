@@ -1,7 +1,7 @@
-#include "common.cpp"
-#include "brkga.h"
-#include "decoder.h"
-#include "MTRand.h"
+#include "../include/common.h"
+#include "../include/brkga.h"
+#include "../include/decoder.h"
+#include "../include/MTRand.h"
 
 int populationSize;
 int numberVariables;
@@ -9,12 +9,8 @@ double maximumTime;
 
 // variante, tempo limite, criterio de parada, objectiveFile, solutionFile, instanciaFile
 void init(int argc, char **argv, FILE **solutionFile, FILE **objectivesFile) {
-    string path_input = "../instances/U_";
-    path_input += string(argv[1]) + "/U_";
-    path_input += string(argv[1]);
-    path_input += "_";
-    path_input += string(argv[2]);
-    path_input += ".txt";
+    string path_input = "instances/";
+    path_input += string(argv[1]) + ".txt";
 
     if (!path_input.empty()) {
         fprintf(stderr, "trying to open input file %s\n", path_input.c_str());

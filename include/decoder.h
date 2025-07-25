@@ -1,5 +1,8 @@
+#ifndef DECODER_H
+#define DECODER_H
+
 #include <bits/stdc++.h>
-#include "common.cpp"
+#include "common.h"
 
 using namespace std;
 
@@ -25,5 +28,7 @@ class Solution {
         violation = 0.0;
     }
 
-    double decode(vector<double>& variables) const;
+    double decode(vector<double> variables) const;
 };
+
+#endif

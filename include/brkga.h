@@ -48,7 +48,7 @@
 #include <algorithm>
 #include <exception>
 #include <stdexcept>
-#include "population.h"
+#include "../include/population.h"
 
 int evaluations;
 
