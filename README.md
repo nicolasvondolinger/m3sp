@@ -1,0 +1,1 @@
+# Multi-period, Multi-rate and Multi-channels with variable bandwidth Scheduling Problem (M3SP)

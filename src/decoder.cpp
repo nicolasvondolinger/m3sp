@@ -6,9 +6,10 @@ bool approximatelyEqual(double a, double b, double epsilon = EPS) {
 
 int convertBand(double value){
     if(value < 0.25) return 20;
-    if(value >= 0.25 && value < 0.50) return 40;
-    if(value >= 0.50 && value < 0.75) return 80;
-    else return 160;
+    else if(value < 0.50) return 40;
+    else if(value < 0.75) return 80;
+    
+    return 160;
 }
 
 int bandIndex(int band){
@@ -91,10 +92,10 @@ double insertNextFree(Solution& sol, int idConnection, int band, vector<double>&
         sol.throughput += newChannel.throughput;
 
         if(auxBand != band){
-            if(newChannel.bandwidth == 20) variables[idConnection * 2 + 1] = (0+0.25)/2.0;
-            else if(newChannel.bandwidth == 40) variables[idConnection * 2 + 1] = (0.25+0.5)/2.0;
-            else if(newChannel.bandwidth == 80) variables[idConnection * 2 + 1] = (0.5+0.75)/2.0;
-            else if(newChannel.bandwidth == 160) variables[idConnection * 2 + 1] = (0.75+1.0)/2.0;
+            if(newChannel.bandwidth == 20) variables[(idConnection * 2) + 1] = (0+0.25)/2.0;
+            else if(newChannel.bandwidth == 40) variables[(idConnection * 2) + 1] = (0.25+0.5)/2.0;
+            else if(newChannel.bandwidth == 80) variables[(idConnection * 2) + 1] = (0.5+0.75)/2.0;
+            else if(newChannel.bandwidth == 160) variables[(idConnection * 2) + 1] = (0.75+1.0)/2.0;
             else cout << "ERRO" << endl;
         }
     }
@@ -111,8 +112,10 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
     for(int t = 0; t < sol.slots.size(); t++){
         for(int s = 0; s < sol.slots[t].spectrums.size(); s++){
             for(int c = 0; c < sol.slots[t].spectrums[s].channels.size(); c++){
+                // Calcular o novo throughput baseado no canal atual da iteração (t, s, c)
                 Channel toInsert = insertInChannel(sol.slots[t].spectrums[s].channels[c], idConnection);
                 double aux = currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput + toInsert.throughput;
+                
                 if(aux > bestThroughput){
                     bestThroughput = aux;
                     newChannel = toInsert;
@@ -124,8 +127,9 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
     }
 
     if(inserted){
-        sol.throughput = sol.throughput - (sol.slots[tscBestThroughput[0]].spectrums[tscBestThroughput[1]].channels[tscBestThroughput[2]].throughput + newChannel.throughput);
+        sol.throughput = bestThroughput;
         sol.slots[tscBestThroughput[0]].spectrums[tscBestThroughput[1]].channels[tscBestThroughput[2]] = newChannel;
+        
         if(newChannel.bandwidth != band){
             if(newChannel.bandwidth==20)variables[(idConnection*2)+1] = (0+0.25)/2.0;
             else if(newChannel.bandwidth==40)variables[(idConnection*2)+1] = (0.25+0.50)/2.0;
@@ -134,7 +138,6 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
             else cout << "ERRO 2" << endl;
         }
     }
-
 }
 
 pair<double, vector<Channel>> dfs(Channel channel){
@@ -159,7 +162,7 @@ pair<double, vector<Channel>> dfs(Channel channel){
 
     double children_throughput = result_a.first + result_b.first; 
 
-    if (children_throughput > channel.throughput) {
+    if (children_throughput < channel.throughput) {
         vector<Channel> best_resultant_channels = result_a.second;
         best_resultant_channels.insert(best_resultant_channels.end(), result_b.second.begin(), result_b.second.end());
         return {children_throughput, best_resultant_channels};
@@ -226,11 +229,12 @@ double Solution::decode(vector<double> variables) const {
         int band = convertBand(variables[links[i][1]+1]);
         insertBestFree(sol, connection, band, variables);
         i++;
-    }
+    } 
 
     Solution temp = dp(sol);
 
-    cout << temp.throughput << endl;
+    // cout << temp.throughput << endl;
 
+    return -1.0 * temp.throughput;
     return -1.0 * sol.throughput;
 }
