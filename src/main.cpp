@@ -26,8 +26,8 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
 
     std::string fileName = instancePath.stem().string();
 
-    string solFile = "output/solutionFile_brkga_" + fileName + ".txt";
-    *solutionFile = fopen(solFile.c_str(), "w");
+    string solFile = "output/solutionFile_brkga.txt";
+    *solutionFile = fopen(solFile.c_str(), "a");
 
     string objFile = "output/objectives_brkga.txt";
     *objectivesFile = fopen(objFile.c_str(), "a");
