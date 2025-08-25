@@ -144,25 +144,27 @@ pair<double, vector<Channel>> dfs(Channel channel){
 
     if(channel.bandwidth <= 20) return {channel.throughput, {channel}}; 
 
-    double newBand = channel.bandwidth / 2;
+    double newBand = channel.bandwidth / 2.0;
     Channel a(newBand), b(newBand);
 
     int n = channel.connections.size();
-    set<int> pos;
-    for(int i = 0; i < n; i++) pos.insert(i);
+    if (n < 2) return {channel.throughput, {channel}}; // Não é possível dividir um canal com 0 ou 1 conexão
+    
+    vector<int> connection_ids;
+    for(const auto& conn : channel.connections) connection_ids.pb(conn.id);
+    
+    random_shuffle(connection_ids.begin(), connection_ids.end()); 
+
     for(int i = 0; i < n; i++){
-        auto it = pos.begin();
-        advance(it, rand() % pos.size());
-        int val = *it; pos.erase(val);
-        if(i < n/2) a = insertInChannel(a, channel.connections[val].id);
-        else b = insertInChannel(b, channel.connections[val].id);
+        if(i < n / 2) a = insertInChannel(a, connection_ids[i]);
+        else b = insertInChannel(b, connection_ids[i]);
     }
 
     pair<double, vector<Channel>> result_a = dfs(a), result_b = dfs(b);
 
     double children_throughput = result_a.first + result_b.first; 
 
-    if (children_throughput < channel.throughput) {
+    if (children_throughput >= channel.throughput) {
         vector<Channel> best_resultant_channels = result_a.second;
         best_resultant_channels.insert(best_resultant_channels.end(), result_b.second.begin(), result_b.second.end());
         return {children_throughput, best_resultant_channels};
@@ -172,23 +174,21 @@ pair<double, vector<Channel>> dfs(Channel channel){
 
 Solution dp(Solution sol){
     Solution ans = sol;
+    ans.throughput = 0.0;
     for(int i = 0; i < sol.slots.size(); i++){
         for(int j = 0; j < sol.slots[i].spectrums.size(); j++){
-            vector<vector<Channel>> changes;
-            for(int k = 0; k < sol.slots[i].spectrums[j].channels.size(); k++){
-                Channel currentChannel = sol.slots[i].spectrums[j].channels[k];
-                vector<Channel> newChannels; double newThroughput;
-                tie(newThroughput, newChannels) = dfs(currentChannel);
+            vector<Channel> originalChannels = ans.slots[i].spectrums[j].channels;
+            ans.slots[i].spectrums[j].channels.clear(); // Limpa para adicionar os canais refinados
 
-                if(newThroughput > currentChannel.throughput){
-                    changes.push_back(newChannels);
-                    ans.slots[i].spectrums[j].channels.erase(ans.slots[i].spectrums[j].channels.begin() + k);
-                    k--;
-                    ans.throughput +=newThroughput;
-                } else ans. throughput += currentChannel.throughput;
-            }
-            for(int k = 0; k < changes.size(); k++){
-                for(auto& c: changes[k]) ans.slots[i].spectrums[j].channels.push_back(c);
+            for(Channel& currentChannel : originalChannels){
+                // Chama a função recursiva corrigida
+                pair<double, vector<Channel>> result = dfs(currentChannel);
+                
+                // Adiciona os canais resultantes (divididos ou o original)
+                for(Channel newChannel : result.second){
+                    ans.slots[i].spectrums[j].channels.push_back(newChannel);
+                }
+                ans.throughput += result.first; // Adiciona o throughput obtido
             }
         }
     }
@@ -231,10 +231,9 @@ double Solution::decode(vector<double> variables) const {
         i++;
     } 
 
-    // Solution temp = dp(sol);
+    Solution temp = dp(sol);
 
-    // cout << temp.throughput << endl;
 
-    // return -1.0 * temp.throughput;
+    return -1.0 * temp.throughput;
     return -1.0 * sol.throughput;
 }

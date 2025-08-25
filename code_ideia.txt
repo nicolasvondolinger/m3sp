@@ -1,0 +1,81 @@
+
+ --- DFS Gulosa ---
+
+pair<double, vector<Channel>> dfs(Channel channel){
+    if(channel.bandwidth <= 20 || channel.connections.size() < 2) {
+        return {channel.throughput, {channel}};
+    }
+
+    double newBand = channel.bandwidth / 2.0;
+    Channel a(newBand), b(newBand);
+    int n = channel.connections.size();
+
+    // --- Início da Lógica de Divisão Inteligente ---
+
+    // 1. Encontrar o par com maior interferência mútua
+    int best_i = -1, best_j = -1;
+    double max_interference = -1.0;
+
+    for(int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            int id1 = channel.connections[i].id;
+            int id2 = channel.connections[j].id;
+            // Usamos a soma da interferência mútua como métrica
+            double mutual_interference = affectance[id1][id2] + affectance[id2][id1];
+            if (mutual_interference > max_interference) {
+                max_interference = mutual_interference;
+                best_i = i;
+                best_j = j;
+            }
+        }
+    }
+
+    // 2. Usar o pior par como semente para os novos canais
+    a = insertInChannel(a, channel.connections[best_i].id);
+    b = insertInChannel(b, channel.connections[best_j].id);
+
+    vector<bool> assigned(n, false);
+    assigned[best_i] = true;
+    assigned[best_j] = true;
+
+    // 3. Atribuir as conexões restantes de forma gulosa
+    for (int k = 0; k < n; ++k) {
+        if (assigned[k]) continue;
+
+        int current_id = channel.connections[k].id;
+        double interference_to_a = 0.0;
+        double interference_to_b = 0.0;
+
+        // Calcula a interferência que a conexão 'k' causaria em cada canal
+        for(const auto& conn_a : a.connections) {
+            interference_to_a += affectance[conn_a.id][current_id];
+        }
+        for(const auto& conn_b : b.connections) {
+            interference_to_b += affectance[conn_b.id][current_id];
+        }
+
+        // Adiciona a conexão ao canal onde ela causa menos interferência
+        if (interference_to_a <= interference_to_b) {
+            a = insertInChannel(a, current_id);
+        } else {
+            b = insertInChannel(b, current_id);
+        }
+        assigned[k] = true;
+    }
+    // --- Fim da Lógica de Divisão Inteligente ---
+
+    pair<double, vector<Channel>> result_a = dfs(a);
+    pair<double, vector<Channel>> result_b = dfs(b);
+    double children_throughput = result_a.first + result_b.first;
+
+    if (children_throughput > channel.throughput) { // Usar '>' em vez de '>=' para evitar divisões neutras
+        vector<Channel> best_resultant_channels = result_a.second;
+        best_resultant_channels.insert(best_resultant_channels.end(), result_b.second.begin(), result_b.second.end());
+        return {children_throughput, best_resultant_channels};
+    } else {
+        return {channel.throughput, {channel}};
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
