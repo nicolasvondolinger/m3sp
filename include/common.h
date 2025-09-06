@@ -70,7 +70,7 @@ struct TimeSlot {
 };
 
 
-extern int nConnections, nSpectrums;
+extern int nConnections, nSpectrums, type;
 extern vector<vector<double>> dataRates, SINR, beta;
 
 extern double distanceMatrix[MAX_CONN][MAX_CONN];

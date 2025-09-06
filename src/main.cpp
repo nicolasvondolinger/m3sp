@@ -9,7 +9,9 @@ int populationSize;
 int numberVariables;
 double maximumTime;
 
-void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile) {
+bool first = true;
+
+void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile) {
     if (!instancePath.empty()) {
         fprintf(stderr, "trying to open input file %s\n", instancePath.c_str());
         freopen(instancePath.c_str(), "r", stdin);
@@ -24,24 +26,47 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     populationSize = 100;
     numberVariables = 2 * nConnections;
 
-    std::string fileName = instancePath.stem().string();
+    string outputDir;
+    if(type) outputDir = "output_dp/" + to_string(nConnections);
+    else outputDir = "output/" + to_string(nConnections);
 
-    string solFile = "output/solutionFile_brkga.txt";
+    try {
+        if (fs::exists(outputDir) && first){
+            fs::remove_all(outputDir);
+            first = false;
+        }
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "Error cleaning up output directories: " << e.what() << endl;
+        exit(1);
+    }
+    
+    try {
+        fs::create_directories(outputDir);
+    } catch (const fs::filesystem_error& e) {
+        fprintf(stderr, "Error creating directory %s: %s\n", outputDir.c_str(), e.what());
+        exit(1);
+    }
+
+    string solFile = outputDir +  "/solution.txt";
+
     *solutionFile = fopen(solFile.c_str(), "a");
 
-    string objFile = "output/objectives_brkga.txt";
+    string objFile = outputDir + "/objectives.txt";
+
     *objectivesFile = fopen(objFile.c_str(), "a");
 
-    fprintf(stdout, "BRKGA will execute for %lf seconds\n", maximumTime);
+    string tFile = outputDir + "/time.txt";
+
+    *timeFile = fopen(tFile.c_str(), "a");
 }
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <tempo_limite>\n", argv[0]);
+        cout << stderr << "Choose type: Normal - 0 | DP - 1" << endl;
         exit(1);
     }
 
-    maximumTime = stod(argv[1]);
+    type = stod(argv[1]);
 
     const unsigned p = 100;
     const double pe = 0.25;
@@ -57,9 +82,9 @@ int main(int argc, char **argv) {
 
     for (const auto& entry : fs::directory_iterator(instancesDir)) {
         if (entry.is_regular_file() && entry.path().extension() == ".txt") {
-            FILE *solutionFile = nullptr,  *objectivesFile = nullptr;
+            FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr;
 
-            init(entry.path(), &solutionFile, &objectivesFile);
+            init(entry.path(), &solutionFile, &objectivesFile, &timeFile);
 
             const unsigned n = numberVariables;
 
@@ -85,7 +110,8 @@ int main(int argc, char **argv) {
             bestIteration = 0;
 
             unsigned generation = 0;
-            do {
+
+            for(int i = 0; i < 1e6; i++){
                 algorithm.evolve();
 
                 if ((++generation) % X_INTVL == 0) {
@@ -98,8 +124,7 @@ int main(int argc, char **argv) {
                     bestGeneration = generation;
                     bestIteration = quantIteracoes;
                 }
-                quantIteracoes++;
-            } while ((((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC) < maximumTime);
+            }
 
             TempoExecTotal = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
 
@@ -110,19 +135,25 @@ int main(int argc, char **argv) {
                 }
                 fprintf(solutionFile, "\n");
             } else {
-                fprintf(stderr, "solutionFile is null!\n");
+                cout << stderr << "solutionFile is null!" << endl; 
                 exit(13);
             }
 
-            if (objectivesFile != nullptr) {
-                fprintf(objectivesFile, "%lf %d\n", -1.0 * algorithm.getBestFitness(), evaluations);
-            } else {
-                fprintf(stderr, "objectivesFiles is null!\n");
+            if (objectivesFile != nullptr) fprintf(objectivesFile, "%lf %d\n", -1.0 * algorithm.getBestFitness(), evaluations);
+            else {
+                cout << stderr << "objectivesFiles is null!" << endl;  
+                exit(13);
+            }
+
+            if(timeFile != nullptr) fprintf(timeFile, "%lf\n", TempoExecTotal);
+            else {
+                cout << stderr << "timeFile is null!" << endl;
                 exit(13);
             }
 
             fclose(solutionFile);
             fclose(objectivesFile);
+            fclose(timeFile);
         }
     }
 

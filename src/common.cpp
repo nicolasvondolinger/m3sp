@@ -8,7 +8,7 @@ double affectance[MAX_CONN][MAX_CONN];
 
 using namespace std;
 
-int nConnections, nSpectrums;
+int nConnections, nSpectrums, type;
 vector<vector<double>> dataRates, SINR, beta;
 double powerSender, alfa, noise, ttm;
 

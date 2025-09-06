@@ -231,9 +231,8 @@ double Solution::decode(vector<double> variables) const {
         i++;
     } 
 
-    // Solution temp = dp(sol);
+    Solution temp;
+    if(type) temp = dp(sol);
 
-
-    // return -1.0 * temp.throughput;
-    return -1.0 * sol.throughput;
+    return (type) ? 1.0 * temp.throughput : -1.0 * sol.throughput;
 }
