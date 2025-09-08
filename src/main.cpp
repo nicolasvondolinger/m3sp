@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     const unsigned MAXT = 1;
     const unsigned X_INTVL = 100;
     const unsigned X_NUMBER = 2;
-    const unsigned MAX_GENS = 1000;
+    // const unsigned MAX_GENS = 1000;
 
     const fs::path instancesDir = "instances";
 
@@ -85,13 +85,13 @@ int main(int argc, char **argv) {
             FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr;
 
             init(entry.path(), &solutionFile, &objectivesFile, &timeFile);
-
+            evaluations = 0;
             const unsigned n = numberVariables;
 
             Solution decoder;
             MTRand rng;
             BRKGA<Solution, MTRand> algorithm(n, p, pe, pm, rhoe, decoder, rng, K, MAXT);
-
+            // cout << "AQUI: " << -algorithm.getBestFitness() << endl;
             double TempoExecTotal = 0.0, TempoFO_Star = 0.0, FO_Star = 1000000007, FO_Min = -1000000007;
             int bestGeneration = 0, minGeneration = 0;
             int iterSemMelhora, iterMax = 10, quantIteracoes = 0, bestIteration = 0;
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 
             unsigned generation = 0;
 
-            for(int i = 0; i < 1e6; i++){
+            for(int i = 0; i < 1e5; i++){
                 algorithm.evolve();
 
                 if ((++generation) % X_INTVL == 0) {

@@ -50,7 +50,7 @@
 #include <stdexcept>
 #include "../include/population.h"
 
-int evaluations;
+ll evaluations = 0;
 
 template< class Decoder, class RNG >
 class BRKGA {
