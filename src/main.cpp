@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
                 exit(13);
             }
 
-            if (objectivesFile != nullptr) fprintf(objectivesFile, "%lf %d\n", -1.0 * algorithm.getBestFitness(), evaluations);
+            if (objectivesFile != nullptr) fprintf(objectivesFile, "%lf %lld\n", -1.0 * algorithm.getBestFitness(), evaluations);
             else {
                 cout << stderr << "objectivesFiles is null!" << endl;  
                 exit(13);
