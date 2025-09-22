@@ -263,7 +263,7 @@ inline void MTRand::seed()
 	}
 	
 	// Was not successful, so use time() and clock() instead
-	seed( hash( time(NULL), clock() ) );
+	seed(1e9 + 7);
 }
 
 inline MTRand::MTRand( const uint32 oneSeed )

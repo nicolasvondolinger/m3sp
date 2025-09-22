@@ -110,20 +110,25 @@ int main(int argc, char **argv) {
             bestIteration = 0;
 
             unsigned generation = 0;
+            const auto DURATION_LIMIT = std::chrono::minutes(5);
 
-            for(int i = 0; i < 1e5; i++){
-                algorithm.evolve();
+            auto startTime = std::chrono::steady_clock::now();
 
-                if ((++generation) % X_INTVL == 0) {
-                    algorithm.exchangeElite(X_NUMBER);
-                }
+            while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
+                //for(int i = 0; i < 1e5; i++){
+                    algorithm.evolve();
 
-                if (algorithm.getBestFitness() < FO_Star) {
-                    TempoFO_Star = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
-                    FO_Star = algorithm.getBestFitness();
-                    bestGeneration = generation;
-                    bestIteration = quantIteracoes;
-                }
+                    if ((++generation) % X_INTVL == 0) {
+                        algorithm.exchangeElite(X_NUMBER);
+                    }
+
+                    if (algorithm.getBestFitness() < FO_Star) {
+                        TempoFO_Star = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
+                        FO_Star = algorithm.getBestFitness();
+                        bestGeneration = generation;
+                        bestIteration = quantIteracoes;
+                    }
+                // }
             }
 
             TempoExecTotal = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
