@@ -114,8 +114,8 @@ int main(int argc, char **argv) {
 
             auto startTime = std::chrono::steady_clock::now();
 
-            while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
-                //for(int i = 0; i < 1e5; i++){
+            // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
+                for(int i = 0; i < 1e4; i++){
                     algorithm.evolve();
 
                     if ((++generation) % X_INTVL == 0) {
@@ -128,8 +128,8 @@ int main(int argc, char **argv) {
                         bestGeneration = generation;
                         bestIteration = quantIteracoes;
                     }
-                // }
-            }
+                }
+            // }
 
             TempoExecTotal = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
 
