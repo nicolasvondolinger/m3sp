@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
             auto startTime = std::chrono::steady_clock::now();
 
             // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
-                for(int i = 0; i < 1e4; i++){
+                for(int i = 0; i < 10; i++){
                     algorithm.evolve();
 
                     if ((++generation) % X_INTVL == 0) {
@@ -126,8 +126,9 @@ int main(int argc, char **argv) {
                         TempoFO_Star = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
                         FO_Star = algorithm.getBestFitness();
                         bestGeneration = generation;
-                        bestIteration = quantIteracoes;
-                    }
+                        bestIteration = quantIteracoes; 
+		   }
+		    cout << i << endl;
                 }
             // }
 
