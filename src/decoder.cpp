@@ -115,7 +115,6 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
                 // Calcular o novo throughput baseado no canal atual da iteração (t, s, c)
                 Channel toInsert = insertInChannel(sol.slots[t].spectrums[s].channels[c], idConnection);
                 double aux = currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput + toInsert.throughput;
-                
                 if(aux > bestThroughput){
                     bestThroughput = aux;
                     newChannel = toInsert;
@@ -138,6 +137,112 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
             else cout << "ERRO 2" << endl;
         }
     }
+}
+
+double insertLessInterference(Solution& sol, int idConnection, vector<double>& variables){
+    const int band = 20; // Banda fixa em 20 MHz
+    
+    for(int i = 0; i < sol.slots.size(); i++){
+        for(int j = 0; j < sol.slots[i].spectrums.size(); j++){
+            int freeSpec = sol.slots[i].spectrums[j].maxFrequency - sol.slots[i].spectrums[j].usedFrequency;
+            if(freeSpec >= band){
+                sol.slots[i].spectrums[j].usedFrequency += band;
+                Channel newChannel = insertInChannel(Channel(band), idConnection);
+                sol.slots[i].spectrums[j].channels.emplace_back(newChannel);
+                sol.throughput += newChannel.throughput;
+                return band; 
+            }
+        }
+    }
+
+    return 0.0;
+}
+
+double calculateTotalChannelInterference(const Channel& channel) {
+    double totalInterference = 0.0;
+    for (const auto& connection : channel.connections) {
+        totalInterference += connection.interference;
+    }
+    return totalInterference;
+}
+
+void insertBestInterference(Solution& sol, int idConnection, vector<double>& variables) {
+    double minAddedInterference = std::numeric_limits<double>::max();
+    Channel bestChannel;
+    vector<int> tscBestPlacement = {-1, -1, -1};
+    bool inserted = false;
+
+    for (int t = 0; t < sol.slots.size(); t++) {
+        for (int s = 0; s < sol.slots[t].spectrums.size(); s++) {
+            for (int c = 0; c < sol.slots[t].spectrums[s].channels.size(); c++) {
+                
+                Channel originalChannel = sol.slots[t].spectrums[s].channels[c];
+                double originalInterference = calculateTotalChannelInterference(originalChannel);
+
+                Channel candidateChannel = insertInChannel(originalChannel, idConnection);
+
+                double newInterference = calculateTotalChannelInterference(candidateChannel);
+
+                double addedInterference = newInterference - originalInterference;
+
+                if (addedInterference < minAddedInterference) {
+                    minAddedInterference = addedInterference;
+                    bestChannel = candidateChannel;
+                    tscBestPlacement = {t, s, c};
+                    inserted = true;
+                }
+            }
+        }
+    }
+
+    if (inserted) {
+        Channel oldChannel = sol.slots[tscBestPlacement[0]].spectrums[tscBestPlacement[1]].channels[tscBestPlacement[2]];
+        sol.throughput -= oldChannel.throughput;
+        sol.throughput += bestChannel.throughput;
+        sol.slots[tscBestPlacement[0]].spectrums[tscBestPlacement[1]].channels[tscBestPlacement[2]] = bestChannel;
+    }
+}
+
+Solution applyFusion(Solution sol) {
+    // Solution newSol = sol;
+    // for(auto& slot : newSol.slots) for(auto& spec : slot.spectrums) spec.channels.clear();
+    while(true){
+        bool done = false, restart = false;
+        for(auto & slot: sol.slots){
+            for(auto & spec: slot.spectrums){
+                int n = spec.channels.size();
+                for(int i = 0; i < n; i++){
+                    Channel a = spec.channels[i], b;
+                    for(int j = i+1; j < n; j++){
+                        if(spec.channels[j].bandwidth == a.bandwidth && a.bandwidth < 160){
+                            b = spec.channels[j];
+                            Channel aux(a.bandwidth*2.0);
+                            vector<int> connection_ids;
+                            for(auto & conn : a.connections) connection_ids.pb(conn.id);
+                            for(auto & conn : b.connections) connection_ids.pb(conn.id);
+                            for(auto & id : connection_ids) aux = insertInChannel(aux, id);
+                            if(aux.throughput > a.throughput + b.throughput){
+                                spec.channels.erase(spec.channels.begin() + j);
+                                spec.channels.erase(spec.channels.begin() + i);
+                                spec.channels.push_back(aux);
+                                sol.throughput -= (a.throughput); sol.throughput -= (b.throughput);
+                                sol.throughput += (aux.throughput);
+                                done = true; restart = true;
+                                // cout << "aqui" << endl;
+                                break; 
+                            }
+                        }
+                    }
+                    if(restart) break;
+                }
+                if(restart) break;
+            }
+            if(restart) break;
+        }
+        if(!done) break;
+    }
+    
+    return sol;
 }
 
 pair<double, vector<Channel>> dfs(Channel channel){
@@ -181,10 +286,8 @@ Solution dp(Solution sol){
             ans.slots[i].spectrums[j].channels.clear(); // Limpa para adicionar os canais refinados
 
             for(Channel& currentChannel : originalChannels){
-                // Chama a função recursiva corrigida
                 pair<double, vector<Channel>> result = dfs(currentChannel);
                 
-                // Adiciona os canais resultantes (divididos ou o original)
                 for(Channel newChannel : result.second){
                     ans.slots[i].spectrums[j].channels.push_back(newChannel);
                 }
@@ -217,22 +320,41 @@ double Solution::decode(vector<double> variables) const {
     double totalSpectrum = 500.0, totalUsed = 0.0;
 
     int i = 0;
-    while(i < links.size() && totalUsed < totalSpectrum){
-        int connection = links[i][1]/2;
-        int band = convertBand(variables[links[i][1]+1]);
-        totalUsed += insertNextFree(sol, connection, band, variables);
-        i++;
+    if(type == 0 || type == 1){
+        while(i < links.size() && totalUsed < totalSpectrum){
+            int connection = links[i][1]/2;
+            int band = convertBand(variables[links[i][1]+1]);
+            totalUsed += insertNextFree(sol, connection, band, variables);
+            i++;
+        }
+
+        while(i < links.size()){
+            int connection = links[i][1]/2;
+            int band = convertBand(variables[links[i][1]+1]);
+            insertBestFree(sol, connection, band, variables);
+            i++;
+        } 
+    } else if(type == 2){
+        while(i < links.size() && totalUsed < totalSpectrum){
+            int connection = links[i][1]/2;
+            totalUsed += insertLessInterference(sol, connection, variables);
+            i++;
+        }   
+        while(i < links.size()){
+            int connection = links[i][1]/2;
+            insertBestInterference(sol, connection, variables);
+            i++;
+        } 
+        
+        cout << sol.throughput << endl;
+        sol = applyFusion(sol);
+        cout << sol.throughput << endl;
+        cout << endl;
+    } else {
+        // Solução gulosa
     }
 
-    while(i < links.size()){
-        int connection = links[i][1]/2;
-        int band = convertBand(variables[links[i][1]+1]);
-        insertBestFree(sol, connection, band, variables);
-        i++;
-    } 
+    if(type == 1) sol = dp(sol);
 
-    Solution temp;
-    if(type) temp = dp(sol);
-
-    return (type) ? (-1.0 * temp.throughput) : (-1.0 * sol.throughput);
+    return -1.0 * sol.throughput;
 }

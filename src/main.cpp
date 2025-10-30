@@ -27,8 +27,9 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     numberVariables = 2 * nConnections;
 
     string outputDir;
-    if(type) outputDir = "output_dp/" + to_string(nConnections);
-    else outputDir = "output/" + to_string(nConnections);
+    if(type == 0) outputDir = "output/" + to_string(nConnections);
+    else if(type == 1) outputDir = "output_dp/" + to_string(nConnections);
+    else if(type == 2) outputDir = "output_fixed_dp/" + to_string(nConnections);
 
     try {
         if (fs::exists(outputDir) && first){
@@ -62,7 +63,7 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        cout << stderr << "Choose type: Normal - 0 | DP - 1" << endl;
+        cout << stderr << "Choose type: Classic - 0 | Classic DP - 1 | Fixed DP - 2" << endl;
         exit(1);
     }
 
@@ -76,7 +77,7 @@ int main(int argc, char **argv) {
     const unsigned MAXT = 1;
     const unsigned X_INTVL = 100;
     const unsigned X_NUMBER = 2;
-    // const unsigned MAX_GENS = 1000;
+    const unsigned MAX_GENS = 1000;
 
     const fs::path instancesDir = "instances";
 
@@ -89,7 +90,7 @@ int main(int argc, char **argv) {
             const unsigned n = numberVariables;
 
             Solution decoder;
-            MTRand rng;
+            MTRand rng(1e9 + 7);
             BRKGA<Solution, MTRand> algorithm(n, p, pe, pm, rhoe, decoder, rng, K, MAXT);
             // cout << "AQUI: " << -algorithm.getBestFitness() << endl;
             double TempoExecTotal = 0.0, TempoFO_Star = 0.0, FO_Star = 1000000007, FO_Min = -1000000007;
@@ -112,33 +113,29 @@ int main(int argc, char **argv) {
             unsigned generation = 0;
             const auto DURATION_LIMIT = std::chrono::minutes(5);
 
-            auto startTime = std::chrono::steady_clock::now();
-
             // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
-                for(int i = 0; i < 10; i++){
-                    algorithm.evolve();
+            for(int i = 0; i < 10; i++){
+                algorithm.evolve();
 
-                    if ((++generation) % X_INTVL == 0) {
-                        algorithm.exchangeElite(X_NUMBER);
-                    }
-
-                    if (algorithm.getBestFitness() < FO_Star) {
-                        TempoFO_Star = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
-                        FO_Star = algorithm.getBestFitness();
-                        bestGeneration = generation;
-                        bestIteration = quantIteracoes; 
-		   }
-		    cout << i << endl;
+                if ((++generation) % X_INTVL == 0) {
+                    algorithm.exchangeElite(X_NUMBER);
                 }
+
+                if (algorithm.getBestFitness() < FO_Star) {
+                    TempoFO_Star = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
+                    FO_Star = algorithm.getBestFitness();
+                    bestGeneration = generation;
+                    bestIteration = quantIteracoes; 
+                }
+                // cout << i << endl;
+            }
             // }
 
             TempoExecTotal = (((double)(clock() - TempoFO_StarInic)) / CLOCKS_PER_SEC);
 
             if (solutionFile != nullptr) {
                 vector<double> best = algorithm.getBestChromosome();
-                for (int i = 0; i < best.size(); i++) {
-                    fprintf(solutionFile, "%lf ", best[i]);
-                }
+                for (int i = 0; i < best.size(); i++) fprintf(solutionFile, "%lf ", best[i]);
                 fprintf(solutionFile, "\n");
             } else {
                 cout << stderr << "solutionFile is null!" << endl; 
