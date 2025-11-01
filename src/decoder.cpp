@@ -261,7 +261,7 @@ pair<double, vector<Channel>> dfs(Channel channel){
     random_shuffle(connection_ids.begin(), connection_ids.end()); 
 
     for(int i = 0; i < n; i++){
-        if(i < n / 2) a = insertInChannel(a, connection_ids[i]);
+        if(i%2==0) a = insertInChannel(a, connection_ids[i]);
         else b = insertInChannel(b, connection_ids[i]);
     }
 
@@ -278,14 +278,22 @@ pair<double, vector<Channel>> dfs(Channel channel){
 }
 
 Solution dp(Solution sol){
-    Solution ans = sol;
+    
+    vector<Channel> aux;
+    Spectrum spec1(160, 0, aux);
+    Spectrum spec2(240, 0, aux);
+    Spectrum spec3(100, 0, aux);
+
+    Solution ans ({spec1, spec2, spec3}, 0.0);
     ans.throughput = 0.0;
+
     for(int i = 0; i < sol.slots.size(); i++){
         for(int j = 0; j < sol.slots[i].spectrums.size(); j++){
-            vector<Channel> originalChannels = ans.slots[i].spectrums[j].channels;
-            ans.slots[i].spectrums[j].channels.clear(); // Limpa para adicionar os canais refinados
+            vector<Channel> originalChannels = sol.slots[i].spectrums[j].channels;
+            // ans.slots[i].spectrums[j].channels.clear(); // Limpa para adicionar os canais refinados
 
             for(Channel& currentChannel : originalChannels){
+                // cout << currentChannel.throughput << endl;
                 pair<double, vector<Channel>> result = dfs(currentChannel);
                 
                 for(Channel newChannel : result.second){
@@ -354,7 +362,10 @@ double Solution::decode(vector<double> variables) const {
         // Solução gulosa
     }
 
-    if(type == 1) sol = dp(sol);
+    if(type == 1){
+        sol = dp(sol);
+        // cout << sol.throughput << endl; 
+    }
 
     return -1.0 * sol.throughput;
 }
