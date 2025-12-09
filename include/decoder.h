@@ -29,6 +29,7 @@ class Solution {
     }
 
     double decode(vector<double> variables) const;
+    mutable ll count_debug = 0;
 };
 
 #endif

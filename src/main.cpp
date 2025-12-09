@@ -11,7 +11,7 @@ double maximumTime;
 
 bool first = true;
 
-void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile) {
+void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile, FILE **populationFile) {
     if (!instancePath.empty()) {
         fprintf(stderr, "trying to open input file %s\n", instancePath.c_str());
         freopen(instancePath.c_str(), "r", stdin);
@@ -30,6 +30,7 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     if(type == 0) outputDir = "output/" + to_string(nConnections);
     else if(type == 1) outputDir = "output_dp/" + to_string(nConnections);
     else if(type == 2) outputDir = "output_fixed_dp/" + to_string(nConnections);
+    else if (type == 3) outputDir = "output_random_dp/" + to_string(nConnections);
 
     try {
         if (fs::exists(outputDir) && first){
@@ -49,16 +50,16 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     }
 
     string solFile = outputDir +  "/solution.txt";
-
     *solutionFile = fopen(solFile.c_str(), "a");
 
     string objFile = outputDir + "/objectives.txt";
-
     *objectivesFile = fopen(objFile.c_str(), "a");
 
     string tFile = outputDir + "/time.txt";
-
     *timeFile = fopen(tFile.c_str(), "a");
+
+    string popFile = outputDir + "/population.txt";
+    *populationFile = fopen(popFile.c_str(), "a");
 }
 
 int main(int argc, char **argv) {
@@ -70,11 +71,11 @@ int main(int argc, char **argv) {
     type = stod(argv[1]);
 
     const unsigned p = 100;
-    const double pe = 0.25;
-    const double pm = 0.05;
+    const double pe = 0.05;
+    const double pm = 0.25;
     const double rhoe = 0.70;
     const unsigned K = 1;
-    const unsigned MAXT = 1;
+    const unsigned MAXT = omp_get_max_threads();
     const unsigned X_INTVL = 100;
     const unsigned X_NUMBER = 2;
     const unsigned MAX_GENS = 1000;
@@ -83,16 +84,15 @@ int main(int argc, char **argv) {
 
     for (const auto& entry : fs::directory_iterator(instancesDir)) {
         if (entry.is_regular_file() && entry.path().extension() == ".txt") {
-            FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr;
+            FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr, *populationFile = nullptr;
 
-            init(entry.path(), &solutionFile, &objectivesFile, &timeFile);
+            init(entry.path(), &solutionFile, &objectivesFile, &timeFile, &populationFile);
             evaluations = 0;
             const unsigned n = numberVariables;
 
             Solution decoder;
             MTRand rng(1e9 + 7);
             BRKGA<Solution, MTRand> algorithm(n, p, pe, pm, rhoe, decoder, rng, K, MAXT);
-            // cout << "AQUI: " << -algorithm.getBestFitness() << endl;
             double TempoExecTotal = 0.0, TempoFO_Star = 0.0, FO_Star = 1000000007, FO_Min = -1000000007;
             int bestGeneration = 0, minGeneration = 0;
             int iterSemMelhora, iterMax = 10, quantIteracoes = 0, bestIteration = 0;
@@ -114,8 +114,21 @@ int main(int argc, char **argv) {
             const auto DURATION_LIMIT = std::chrono::minutes(5);
 
             // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
-            for(int i = 0; i < 10; i++){
+            for(int i = 0; i < 1000; i++){
+                refine = (rng.randInt(1) == 1);
+                
                 algorithm.evolve();
+
+                if (populationFile != nullptr) {
+                    // Assume K=0 (apenas uma população ou a principal)
+                    // Itera sobre todos os indivíduos (tamanho p)
+                    for(unsigned k = 0; k < p; k++) {
+                        // Obtém o fitness. Multiplica por -1.0 para obter o Throughput real
+                        double val = -1.0 * algorithm.getPopulationFitness(0, k);
+                        fprintf(populationFile, "%lf ", val);
+                    }
+                    fprintf(populationFile, "\n"); // Nova linha = Nova geração
+                }
 
                 if ((++generation) % X_INTVL == 0) {
                     algorithm.exchangeElite(X_NUMBER);
@@ -127,7 +140,6 @@ int main(int argc, char **argv) {
                     bestGeneration = generation;
                     bestIteration = quantIteracoes; 
                 }
-                // cout << i << endl;
             }
             // }
 
@@ -157,7 +169,9 @@ int main(int argc, char **argv) {
             fclose(solutionFile);
             fclose(objectivesFile);
             fclose(timeFile);
+            fclose(populationFile);
         }
+
     }
 
     exit(0);

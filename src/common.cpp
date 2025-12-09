@@ -14,6 +14,7 @@ double powerSender, alfa, noise, ttm;
 
 vector<Spectrum> init_conf;
 vector<int> spectrum_size;
+bool refine = false;
 
 Connection::Connection(int id, double throughput, double interference, double distanceSR)
     : id(id), throughput(throughput), interference(interference), distanceSR(distanceSR) {

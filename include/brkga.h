@@ -107,6 +107,10 @@ public:
 	 */
 	const std::vector< double >& getBestChromosome() const;
 
+	double getPopulationFitness(unsigned k, unsigned i) const {
+        return current[k]->fitness[i].first;
+    }
+
 	/**
 	 * Returns the best fitness found so far among all populations
 	 */

@@ -19,6 +19,7 @@ const ll MAX_CONN = 2048;
 const int X_c = 0;
 const int Y_c = 1;
 const double EPS = 1e-7;
+extern bool refine;
 
 struct Connection {
     int id;
