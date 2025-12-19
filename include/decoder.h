@@ -28,7 +28,7 @@ class Solution {
         violation = 0.0;
     }
 
-    double decode(vector<double> variables) const;
+    double decode(vector<double>& variables) const;
     mutable ll count_debug = 0;
 };
 

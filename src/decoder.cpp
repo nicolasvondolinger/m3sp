@@ -1,4 +1,5 @@
 #include "../include/decoder.h"
+#include "../include/MTRand.h" 
 
 bool approximatelyEqual(double a, double b, double epsilon = EPS) {
     return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
@@ -245,7 +246,7 @@ Solution applyFusion(Solution sol) {
     return sol;
 }
 
-pair<double, vector<Channel>> dfs(Channel channel){
+pair<double, vector<Channel>> dfs(Channel channel, MTRand& rng){
 
     if(channel.bandwidth <= 20) return {channel.throughput, {channel}}; 
 
@@ -259,15 +260,18 @@ pair<double, vector<Channel>> dfs(Channel channel){
     vector<int> connection_ids;
     for(const auto& conn : channel.connections) connection_ids.pb(conn.id);
     
-    thread_local std::mt19937 gen(std::random_device{}()); // Gerador único por thread
-    std::shuffle(connection_ids.begin(), connection_ids.end(), gen);
+    int n_conn = connection_ids.size();
+    for (int i = n_conn - 1; i > 0; --i) {
+        int j = rng.randInt(i); 
+        std::swap(connection_ids[i], connection_ids[j]);
+    }
 
     for(int i = 0; i < n; i++){
         if(i%2==0) a = insertInChannel(a, connection_ids[i]);
         else b = insertInChannel(b, connection_ids[i]);
     }
 
-    pair<double, vector<Channel>> result_a = dfs(a), result_b = dfs(b);
+    pair<double, vector<Channel>> result_a = dfs(a, rng), result_b = dfs(b, rng);
 
     double children_throughput = result_a.first + result_b.first; 
 
@@ -279,7 +283,7 @@ pair<double, vector<Channel>> dfs(Channel channel){
     
 }
 
-Solution dp(Solution sol){
+Solution dp(Solution sol, MTRand& rng){
     
     Solution newSol = sol; 
     newSol.throughput = 0.0;
@@ -297,7 +301,7 @@ Solution dp(Solution sol){
             vector<Channel> originalChannels = sol.slots[i].spectrums[j].channels;
 
             for(Channel& currentChannel : originalChannels){
-                pair<double, vector<Channel>> result = dfs(currentChannel);
+                pair<double, vector<Channel>> result = dfs(currentChannel, rng);
                 
                 for(Channel newChannel : result.second){
                     newSol.slots[i].spectrums[j].channels.push_back(newChannel);
@@ -312,7 +316,48 @@ Solution dp(Solution sol){
     return newSol;
 }
 
-double Solution::decode(vector<double> variables) const {
+vector<double> rebuildChromossome(const Solution& sol, int nVariables) {
+    vector<double> newVariables(nVariables, 0.5); 
+    
+    int totalConnections = 0;
+    for (const auto& slot : sol.slots)
+        for (const auto& spec : slot.spectrums)
+            for (const auto& channel : spec.channels)
+                totalConnections += channel.connections.size();
+
+    double priorityStep = 1.0 / (totalConnections + 1.0);
+    double currentPriority = priorityStep;
+
+    for (const auto& slot : sol.slots) {
+        for (const auto& spec : slot.spectrums) {
+            for (const auto& channel : spec.channels) {
+                
+                double newBandGene = 0.0;
+                if (channel.bandwidth == 20) newBandGene = 0.125;
+                else if (channel.bandwidth == 40) newBandGene = 0.375;
+                else if (channel.bandwidth == 80) newBandGene = 0.625;
+                else newBandGene = 0.875;
+
+                for (const auto& conn : channel.connections) {
+                    int id = conn.id;
+                    int priorityIndex = id * 2;
+                    int bandIndex = (id * 2) + 1;
+
+                    if (bandIndex < nVariables) {
+                        newVariables[bandIndex] = newBandGene;
+                        newVariables[priorityIndex] = currentPriority;
+                        
+                        currentPriority += priorityStep;
+                    }
+                }
+            }
+        }
+    }
+    
+    return newVariables;
+}
+
+Solution verify(vector<double>& variables){
     int n = variables.size();
 
     vector<vector<double>> links(n/2);
@@ -333,6 +378,46 @@ double Solution::decode(vector<double> variables) const {
     double totalSpectrum = 500.0, totalUsed = 0.0;
 
     int i = 0;
+    while(i < links.size() && totalUsed < totalSpectrum){
+            int connection = links[i][1]/2;
+            int band = convertBand(variables[links[i][1]+1]);
+            totalUsed += insertNextFree(sol, connection, band, variables);
+            i++;
+    }
+
+    while(i < links.size()){
+        int connection = links[i][1]/2;
+        int band = convertBand(variables[links[i][1]+1]);
+        insertBestFree(sol, connection, band, variables);
+        i++;
+    } 
+
+    return sol;
+}
+
+double Solution::decode(vector<double>& variables) const {
+    int n = variables.size();
+
+    vector<vector<double>> links(n/2);
+
+    for(int i = 0; i < n; i+=2){
+        double k1 = variables[i];
+        links[i/2].push_back(k1); links[i/2].push_back(i);
+    }
+
+    sort(links.begin(), links.end());
+
+    vector<Channel> aux;
+    Spectrum spec1(160, 0, aux);
+    Spectrum spec2(240, 0, aux);
+    Spectrum spec3(100, 0, aux);
+
+    Solution sol ({spec1, spec2, spec3}, 0.0);
+    double totalSpectrum = 500.0, totalUsed = 0.0;
+
+    MTRand rng(1e9 + 7);
+
+    int i = 0;
     if(type == 0 || type == 1 || type == 3){
         while(i < links.size() && totalUsed < totalSpectrum){
             int connection = links[i][1]/2;
@@ -349,7 +434,16 @@ double Solution::decode(vector<double> variables) const {
         } 
 
         if(type == 1 || (type == 3 && refine)){
-            sol = dp(sol);
+            sol = dp(sol, rng);
+            // variables = rebuildChromossome(sol, n);
+            // vector<double> new_var = rebuildChromossome(sol, n);
+            /* Solution temp = verify(new_var);
+            if(temp.throughput == sol.throughput) cout << "IGUAL" << endl;
+            else{
+
+                cout << "DIFERENTE" << endl;
+                cout << temp.throughput << " " << sol.throughput << endl;
+            } */
         }
         
     } else if(type == 2) {
@@ -367,7 +461,7 @@ double Solution::decode(vector<double> variables) const {
         
         sol = applyFusion(sol);
     } else {
-        // Solução Gulosa (TODO)
+        
     }
 
 

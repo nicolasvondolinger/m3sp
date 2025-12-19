@@ -11,6 +11,16 @@ double maximumTime;
 
 bool first = true;
 
+const unsigned p = 100;
+const double pe = 0.25;
+const double pm = 0.05;
+const double rhoe = 0.70;
+const unsigned K = 1;
+const unsigned MAXT = omp_get_max_threads();
+const unsigned X_INTVL = 100;
+const unsigned X_NUMBER = 2;
+const unsigned MAX_GENS = 1000;
+
 void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile, FILE **populationFile) {
     if (!instancePath.empty()) {
         fprintf(stderr, "trying to open input file %s\n", instancePath.c_str());
@@ -27,10 +37,13 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     numberVariables = 2 * nConnections;
 
     string outputDir;
-    if(type == 0) outputDir = "output/" + to_string(nConnections);
-    else if(type == 1) outputDir = "output_dp/" + to_string(nConnections);
-    else if(type == 2) outputDir = "output_fixed_dp/" + to_string(nConnections);
-    else if (type == 3) outputDir = "output_random_dp/" + to_string(nConnections);
+
+    ostringstream oss; oss << (pe * 100); 
+    string aux = oss.str();
+    if(type == 0) outputDir = "../output/output_" + aux + '/' + to_string(nConnections);
+    else if(type == 1) outputDir = "../output/output_dp_" + aux + '/' + to_string(nConnections);
+    else if(type == 2) outputDir = "../output/output_fixed_dp_" + aux + '/' + to_string(nConnections);
+    else if (type == 3) outputDir = "../output/output_random_dp_" + aux + '/' + to_string(nConnections);
 
     try {
         if (fs::exists(outputDir) && first){
@@ -70,18 +83,10 @@ int main(int argc, char **argv) {
 
     type = stod(argv[1]);
 
-    const unsigned p = 100;
-    const double pe = 0.05;
-    const double pm = 0.25;
-    const double rhoe = 0.70;
-    const unsigned K = 1;
-    const unsigned MAXT = omp_get_max_threads();
-    const unsigned X_INTVL = 100;
-    const unsigned X_NUMBER = 2;
-    const unsigned MAX_GENS = 1000;
+    const fs::path instancesDir = "../instances";
 
-    const fs::path instancesDir = "instances";
-
+    vector<int> prime_numbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+    int i = 0;
     for (const auto& entry : fs::directory_iterator(instancesDir)) {
         if (entry.is_regular_file() && entry.path().extension() == ".txt") {
             FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr, *populationFile = nullptr;
@@ -91,7 +96,7 @@ int main(int argc, char **argv) {
             const unsigned n = numberVariables;
 
             Solution decoder;
-            MTRand rng(1e9 + 7);
+            MTRand rng(prime_numbers[i]); i++;
             BRKGA<Solution, MTRand> algorithm(n, p, pe, pm, rhoe, decoder, rng, K, MAXT);
             double TempoExecTotal = 0.0, TempoFO_Star = 0.0, FO_Star = 1000000007, FO_Min = -1000000007;
             int bestGeneration = 0, minGeneration = 0;
@@ -140,6 +145,7 @@ int main(int argc, char **argv) {
                     bestGeneration = generation;
                     bestIteration = quantIteracoes; 
                 }
+                
             }
             // }
 
