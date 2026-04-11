@@ -8,6 +8,8 @@ double affectance[MAX_CONN][MAX_CONN];
 
 using namespace std;
 
+MTRand rng;
+
 int nConnections, nSpectrums, type;
 vector<vector<double>> dataRates, SINR, beta;
 double powerSender, alfa, noise, ttm;
@@ -15,6 +17,7 @@ double powerSender, alfa, noise, ttm;
 vector<Spectrum> init_conf;
 vector<int> spectrum_size;
 bool refine = false;
+long long count_improvements = 0;
 
 Connection::Connection(int id, double throughput, double interference, double distanceSR)
     : id(id), throughput(throughput), interference(interference), distanceSR(distanceSR) {

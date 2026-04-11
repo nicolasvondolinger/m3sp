@@ -1,7 +1,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <bits/stdc++.h>         
+#include <bits/stdc++.h>      
+#include <omp.h>          // Necessário para omp_get_thread_num()
+#include "../include/MTRand.h"
 
 #define _ ios_base::sync_with_stdio(0); cin.tie(0);
 #define endl '\n'
@@ -20,6 +22,8 @@ const int X_c = 0;
 const int Y_c = 1;
 const double EPS = 1e-7;
 extern bool refine;
+
+extern MTRand rng;
 
 struct Connection {
     int id;
@@ -81,6 +85,7 @@ extern double receivers[MAX_CONN][2];
 extern double affectance[MAX_CONN][MAX_CONN];
 extern double powerSender, alfa, noise, ttm;
 
+extern long long count_improvements;
 
 extern vector<Spectrum> init_conf;
 extern vector<int> spectrum_size;

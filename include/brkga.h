@@ -50,6 +50,7 @@
 #include <stdexcept>
 #include "../include/population.h"
 
+extern MTRand rng;
 ll evaluations = 0;
 
 template< class Decoder, class RNG >
@@ -71,7 +72,7 @@ public:
 	 *                + double Decoder::decode(std::vector< double >& chromosome) const
 	 */
 	BRKGA(unsigned n, unsigned p, double pe, double pm, double rhoe,
-			const Decoder& refDecoder, RNG& refRNG, unsigned K = 1, unsigned MAX_THREADS = 1);
+			const Decoder& refDecoder, unsigned K = 1, unsigned MAX_THREADS = 1);
 
 	/**
 	 * Destructor
@@ -154,7 +155,7 @@ private:
 
 template< class Decoder, class RNG >
 BRKGA< Decoder, RNG >::BRKGA(unsigned _n, unsigned _p, double _pe, double _pm, double _rhoe,
-		const Decoder& decoder, RNG& rng, unsigned _K, unsigned MAX) : n(_n), p(_p),
+		const Decoder& decoder, unsigned _K, unsigned MAX) : n(_n), p(_p),
 		pe(unsigned(_pe * p)), pm(unsigned(_pm * p)), rhoe(_rhoe),
 		refRNG(rng), refDecoder(decoder), K(_K), MAX_THREADS(MAX),
 		previous(K, 0), current(K, 0) {

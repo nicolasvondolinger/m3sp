@@ -115,7 +115,7 @@ void insertBestFree(Solution& sol, int idConnection, int band, vector<double>& v
             for(int c = 0; c < sol.slots[t].spectrums[s].channels.size(); c++){
                 // Calcular o novo throughput baseado no canal atual da iteração (t, s, c)
                 Channel toInsert = insertInChannel(sol.slots[t].spectrums[s].channels[c], idConnection);
-                double aux = currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput + toInsert.throughput;
+                double aux = (currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput) + toInsert.throughput;
                 if(aux > bestThroughput){
                     bestThroughput = aux;
                     newChannel = toInsert;
@@ -246,7 +246,7 @@ Solution applyFusion(Solution sol) {
     return sol;
 }
 
-pair<double, vector<Channel>> dfs(Channel channel, MTRand& rng){
+pair<double, vector<Channel>> dfs(Channel channel){
 
     if(channel.bandwidth <= 20) return {channel.throughput, {channel}}; 
 
@@ -262,7 +262,7 @@ pair<double, vector<Channel>> dfs(Channel channel, MTRand& rng){
     
     int n_conn = connection_ids.size();
     for (int i = n_conn - 1; i > 0; --i) {
-        int j = rng.randInt(i); 
+        int j = rng.randInt(i);
         std::swap(connection_ids[i], connection_ids[j]);
     }
 
@@ -271,7 +271,7 @@ pair<double, vector<Channel>> dfs(Channel channel, MTRand& rng){
         else b = insertInChannel(b, connection_ids[i]);
     }
 
-    pair<double, vector<Channel>> result_a = dfs(a, rng), result_b = dfs(b, rng);
+    pair<double, vector<Channel>> result_a = dfs(a), result_b = dfs(b);
 
     double children_throughput = result_a.first + result_b.first; 
 
@@ -283,8 +283,7 @@ pair<double, vector<Channel>> dfs(Channel channel, MTRand& rng){
     
 }
 
-Solution dp(Solution sol, MTRand& rng){
-    
+Solution dp(Solution sol){
     Solution newSol = sol; 
     newSol.throughput = 0.0;
 
@@ -301,7 +300,7 @@ Solution dp(Solution sol, MTRand& rng){
             vector<Channel> originalChannels = sol.slots[i].spectrums[j].channels;
 
             for(Channel& currentChannel : originalChannels){
-                pair<double, vector<Channel>> result = dfs(currentChannel, rng);
+                pair<double, vector<Channel>> result = dfs(currentChannel);
                 
                 for(Channel newChannel : result.second){
                     newSol.slots[i].spectrums[j].channels.push_back(newChannel);
@@ -316,9 +315,10 @@ Solution dp(Solution sol, MTRand& rng){
     return newSol;
 }
 
-vector<double> rebuildChromossome(const Solution& sol, int nVariables) {
-    vector<double> newVariables(nVariables, 0.5); 
+vector<double> rebuildChromossome(const Solution& sol, int nVariables, vector<double>& variables) {
+    vector<double> newVariables = variables; 
     
+    // 1. Calcula o total de conexões para definir o passo da prioridade
     int totalConnections = 0;
     for (const auto& slot : sol.slots)
         for (const auto& spec : slot.spectrums)
@@ -328,29 +328,72 @@ vector<double> rebuildChromossome(const Solution& sol, int nVariables) {
     double priorityStep = 1.0 / (totalConnections + 1.0);
     double currentPriority = priorityStep;
 
+    vector<double> channels_gene;
+    // aux[j] guarda as conexões do canal j
+    vector<vector<Connection>> aux; 
+
+    // 2. Preenche a estrutura auxiliar
     for (const auto& slot : sol.slots) {
         for (const auto& spec : slot.spectrums) {
             for (const auto& channel : spec.channels) {
                 
+                // Define o gene da banda para este canal
                 double newBandGene = 0.0;
                 if (channel.bandwidth == 20) newBandGene = 0.125;
                 else if (channel.bandwidth == 40) newBandGene = 0.375;
                 else if (channel.bandwidth == 80) newBandGene = 0.625;
                 else newBandGene = 0.875;
-
+                
+                channels_gene.push_back(newBandGene);
+                
+                // Ordena conexões dentro do canal pela prioridade ANTIGA
+                // para manter consistência interna
+                vector<pair<double, Connection>> temp_chan;
                 for (const auto& conn : channel.connections) {
-                    int id = conn.id;
-                    int priorityIndex = id * 2;
-                    int bandIndex = (id * 2) + 1;
-
-                    if (bandIndex < nVariables) {
-                        newVariables[bandIndex] = newBandGene;
-                        newVariables[priorityIndex] = currentPriority;
-                        
-                        currentPriority += priorityStep;
-                    }
+                    temp_chan.push_back({variables[conn.id * 2], conn});
                 }
+                sort(temp_chan.begin(), temp_chan.end()); // Ordena pelo first (priority antiga)
+
+                // Salva apenas as conexões ordenadas no aux
+                vector<Connection> sorted_conns;
+                for(auto& p : temp_chan) sorted_conns.push_back(p.second);
+                aux.push_back(sorted_conns);
             }
+        }
+    }
+
+    // 3. Descobre a profundidade máxima (canal com mais conexões)
+    int max_depth = 0;
+    for(int j = 0; j < aux.size(); j++){
+        max_depth = max(max_depth, int(aux[j].size()));
+    }
+
+    // 4. Reconstrói intercalando (Round Robin)
+    // i = índice da conexão dentro do canal (profundidade)
+    // j = índice do canal
+    for(int i = 0; i < max_depth; i++){
+        for(int j = 0; j < aux.size(); j++){
+            
+            // Verifica se o canal 'j' possui uma conexão na posição 'i'
+            if(i >= aux[j].size()) continue;
+
+            // CORREÇÃO DO SEG_FAULT AQUI: aux[j][i] e não aux[i][j]
+            Connection conn = aux[j][i]; 
+            
+            int id = conn.id;
+            int priorityIndex = id * 2;
+            int bandIndex = id * 2 + 1;
+
+            // if (priorityIndex < nVariables && bandIndex < nVariables) {
+                // Atribui a nova prioridade sequencial
+                // newVariables[priorityIndex] = currentPriority;
+                
+                // Atribui o gene do canal 'j' correspondente
+                // CORREÇÃO DE LÓGICA: channels_gene[j] e não [i]
+                newVariables[bandIndex] = channels_gene[j]; 
+
+                currentPriority += priorityStep;
+           // }
         }
     }
     
@@ -395,6 +438,173 @@ Solution verify(vector<double>& variables){
     return sol;
 }
 
+bool checkFeasibility(const Solution& sol, int totalLinksExpected) {
+    double totalSolThroughput = 0.0;
+    vector<int> linkCounts(totalLinksExpected, 0);
+
+    for (int t = 0; t < sol.slots.size(); t++) {
+        for (int s = 0; s < sol.slots[t].spectrums.size(); s++) {
+            const auto& spec = sol.slots[t].spectrums[s];
+            double usedFreq = 0.0;
+
+            for (const auto& channel : spec.channels) {
+                usedFreq += channel.bandwidth;
+
+                double channelThroughputCheck = 0.0;
+
+                for (size_t i = 0; i < channel.connections.size(); i++) {
+                    const auto& connA = channel.connections[i];
+                    
+                    if (connA.id < 0 || connA.id >= totalLinksExpected) {
+                        cout << "[ERRO] Link ID invalido: " << connA.id << endl;
+                        return false;
+                    }
+                    linkCounts[connA.id]++;
+
+                    double calcInterference = 0.0;
+                    for (size_t j = 0; j < channel.connections.size(); j++) {
+                        if (i == j) continue;
+                        const auto& connB = channel.connections[j];
+                        calcInterference += affectance[connA.id][connB.id];
+                    }
+
+                    if (!approximatelyEqual(calcInterference, connA.interference, 1e-4)) {
+                        cout << "[ERRO] Interferencia incompativel no Slot " << t << " Spec " << s 
+                             << " Link " << connA.id << ". Real: " << calcInterference 
+                             << " vs Salvo: " << connA.interference << endl;
+                        return false;
+                    }
+
+                    Connection tempConn = connA;
+                    tempConn.interference = calcInterference; 
+                    computeConnectionThroughput(tempConn, channel.bandwidth);
+                    
+                    if (!approximatelyEqual(tempConn.throughput, connA.throughput, 1e-4)) {
+                         cout << "[ERRO] Throughput incompativel no Link " << connA.id 
+                              << ". Real: " << tempConn.throughput << " vs Salvo: " << connA.throughput << endl;
+                         return false;
+                    }
+
+                    channelThroughputCheck += tempConn.throughput;
+                }
+
+                if (!approximatelyEqual(channelThroughputCheck, channel.throughput, 1e-4)) {
+                    cout << "[ERRO] Soma do Throughput do Canal errada. Real: " << channelThroughputCheck 
+                         << " vs Salvo: " << channel.throughput << endl;
+                    return false;
+                }
+                
+                totalSolThroughput += channelThroughputCheck;
+            }
+
+            if (usedFreq > spec.maxFrequency + EPS) {
+                cout << "[ERRO] Espectro estourado no Slot " << t << " Spec " << s 
+                     << ". Usado: " << usedFreq << " / Max: " << spec.maxFrequency << endl;
+                return false;
+            }
+        }
+    }
+
+    if (!approximatelyEqual(totalSolThroughput, sol.throughput, 1e-3)) {
+         cout << "[ERRO] Throughput Total da Solucao errado. Calculado: " << totalSolThroughput 
+              << " vs Armazenado: " << sol.throughput << endl;
+         return false;
+    }
+
+    for(int i = 0; i < totalLinksExpected; i++){
+        if(linkCounts[i] > 1){
+             cout << "[AVISO] Link " << i << " alocado " << linkCounts[i] << " vezes." << endl;
+        }
+    }
+
+    return true;
+}
+
+void insertInBestChannel(Solution& sol, int idConnection, vector<double>& variables){
+    double currentThroughput = sol.throughput, bestThroughput = sol.throughput;
+    bool inserted = false, splited = false, created = false;
+    Channel top, left, right, toBeCreated;
+    vector<int> tsc(3, -1);
+
+    for(int t = 0; t < sol.slots.size(); t++){
+        for(int s = 0; s < sol.slots[t].spectrums.size(); s++){
+            int freeSpec = sol.slots[t].spectrums[s].maxFrequency - sol.slots[t].spectrums[s].usedFrequency;
+            if(freeSpec > 160) freeSpec = 160;
+            else if (freeSpec > 80) freeSpec = 80;
+            else if(freeSpec > 40) freeSpec = 40;
+            
+            if(freeSpec != 0){
+                Channel temp(freeSpec);
+                temp = insertInChannel(temp, idConnection);
+                double aux_temp = currentThroughput + temp.throughput;
+
+                if(aux_temp > bestThroughput){
+                    created = true; splited = false; inserted = false;
+                    bestThroughput = aux_temp;
+                    toBeCreated = temp;
+                    tsc = {t, s, -1};
+                }
+            }
+
+            for(int c = 0; c < sol.slots[t].spectrums[s].channels.size(); c++){
+                // Calcular o novo throughput baseado no canal atual da iteração (t, s, c)
+                Channel toInsert = insertInChannel(sol.slots[t].spectrums[s].channels[c], idConnection);
+                double aux = (currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput) + toInsert.throughput;
+                if(aux > bestThroughput){
+                    splited = false;
+                    bestThroughput = aux;
+                    top = toInsert;
+                    inserted = true;
+                    tsc = {t, s, c};
+                }
+
+                int n = toInsert.connections.size();
+                double newBand = toInsert.bandwidth / 2.0;
+                Channel temp1(newBand), temp2(newBand);
+
+                vector<int> connection_ids;
+                for(const auto& conn : toInsert.connections) connection_ids.pb(conn.id);
+                
+                int n_conn = connection_ids.size();
+                for (int i = n_conn - 1; i > 0; --i) {
+                    int j = rng.randInt(i);
+                    std::swap(connection_ids[i], connection_ids[j]);
+                }
+
+                for(int i = 0; i < n; i++){
+                    if(i%2==0) temp1 = insertInChannel(temp1, connection_ids[i]);
+                    else temp2 = insertInChannel(temp2, connection_ids[i]);
+                }
+
+                double newAux = (currentThroughput - sol.slots[t].spectrums[s].channels[c].throughput) + temp1.throughput + temp2.throughput;
+                if(newAux > bestThroughput){
+                    splited = true; inserted = true;
+                    bestThroughput = newAux;
+                    left = temp1; right = temp2;
+                    tsc = {t, s, c};
+                }
+            }
+        }
+    }
+
+    if(inserted && !splited){
+        sol.throughput = bestThroughput;
+        sol.slots[tsc[0]].spectrums[tsc[1]].channels[tsc[2]] = top;
+        // sol.slots[tsc[0]].spectrums[tsc[1]].usedFrequency += top.bandwidth;
+    } else if(inserted && splited){
+        sol.throughput = bestThroughput;
+        sol.slots[tsc[0]].spectrums[tsc[1]].channels.erase(sol.slots[tsc[0]].spectrums[tsc[1]].channels.begin() + tsc[2]);
+        sol.slots[tsc[0]].spectrums[tsc[1]].channels.push_back(left);
+        sol.slots[tsc[0]].spectrums[tsc[1]].channels.push_back(right);
+        // sol.slots[tsc[0]].spectrums[tsc[1]].usedFrequency += left.bandwidth + right.bandwidth;
+    } else if(created){
+        sol.throughput = bestThroughput;
+        sol.slots[tsc[0]].spectrums[tsc[1]].channels.push_back(toBeCreated);
+        sol.slots[tsc[0]].spectrums[tsc[1]].usedFrequency += toBeCreated.bandwidth;
+    }
+
+}
+
 double Solution::decode(vector<double>& variables) const {
     int n = variables.size();
 
@@ -415,10 +625,9 @@ double Solution::decode(vector<double>& variables) const {
     Solution sol ({spec1, spec2, spec3}, 0.0);
     double totalSpectrum = 500.0, totalUsed = 0.0;
 
-    MTRand rng(1e9 + 7);
-
     int i = 0;
-    if(type == 0 || type == 1 || type == 3){
+    if(type == 0 || type == 1 || type == 3 || type == 4){
+
         while(i < links.size() && totalUsed < totalSpectrum){
             int connection = links[i][1]/2;
             int band = convertBand(variables[links[i][1]+1]);
@@ -433,17 +642,16 @@ double Solution::decode(vector<double>& variables) const {
             i++;
         } 
 
-        if(type == 1 || (type == 3 && refine)){
-            sol = dp(sol, rng);
-            // variables = rebuildChromossome(sol, n);
-            // vector<double> new_var = rebuildChromossome(sol, n);
-            /* Solution temp = verify(new_var);
-            if(temp.throughput == sol.throughput) cout << "IGUAL" << endl;
-            else{
-
-                cout << "DIFERENTE" << endl;
-                cout << temp.throughput << " " << sol.throughput << endl;
-            } */
+        if(type == 1 || (type == 3 && refine) || type == 4){
+            Solution temp = dp(sol);
+            
+            if (temp.throughput > sol.throughput) { 
+                #pragma omp atomic
+                count_improvements++;
+            }
+            // cout << temp.throughput << endl;
+            sol = temp;
+            if(type == 4) variables = rebuildChromossome(sol, n, variables);            
         }
         
     } else if(type == 2) {
@@ -460,10 +668,18 @@ double Solution::decode(vector<double>& variables) const {
         } 
         
         sol = applyFusion(sol);
-    } else {
-        
+    } else if (type == 5){
+        while(i < links.size() && totalUsed < totalSpectrum){
+            int connection = links[i][1]/2;
+            insertInBestChannel(sol, connection, variables);
+            i++;
+        }
     }
 
+    if (!checkFeasibility(sol, n/2)) {
+        cout << "Solucao Inviável Detectada!" << endl;
+        exit(1); 
+    }
 
     return -1.0 * sol.throughput;
 }
