@@ -22,6 +22,14 @@ const int X_c = 0;
 const int Y_c = 1;
 const double EPS = 1e-7;
 extern bool refine;
+extern bool applyFinalLS;
+extern bool applyEliteLS;
+
+// Coleta da composicao de canais da solucao final (para o grafico de larguras de banda).
+// Quando collectChannels==true, o decode() preenche channelBandCount com a contagem de
+// canais por largura de banda (ex.: channelBandCount[20], [40], [80], [160]).
+extern bool collectChannels;
+extern map<int, long long> channelBandCount;
 
 extern MTRand rng;
 

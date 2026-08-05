@@ -4,7 +4,6 @@
 
 namespace fs = std::filesystem;
 
-int populationSize;
 int numberVariables;
 double maximumTime;
 
@@ -20,7 +19,11 @@ const unsigned X_INTVL = 100;
 const unsigned X_NUMBER = 2;
 const unsigned MAX_GENS = 1000;
 
-void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile, FILE **populationFile) {
+// type 6: se true, aplica localSearchType6 nas pe elites a cada geracao
+// (alem da LS final na melhor solucao). Edite e recompile para alternar.
+const bool USE_ELITE_LS = true;
+
+void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile, FILE **populationFile, FILE **channelsFile) {
     if (!instancePath.empty()) {
         fprintf(stderr, "trying to open input file %s\n", instancePath.c_str());
         freopen(instancePath.c_str(), "r", stdin);
@@ -32,7 +35,6 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     }
 
     loadData();
-    populationSize = 100;
     numberVariables = 2 * nConnections;
 
     string outputDir;
@@ -41,9 +43,9 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     string aux = oss.str();
     if(type == 0) outputDir = "../output/output_" + aux + '/' + to_string(nConnections);
     else if(type == 1 || type == 4) outputDir = "../output/output_dp_" + aux + '/' + to_string(nConnections);
-    else if(type == 2) outputDir = "../output/output_fixed_dp_" + aux + '/' + to_string(nConnections);
     else if (type == 3) outputDir = "../output/output_random_dp_" + aux + '/' + to_string(nConnections);
-    else if(type == 5) outputDir = "../output/output_new_heuristic_" + aux + '/' + to_string(nConnections);
+    else if(type == 5) outputDir = "../output/output_new_heuristic_2_" + aux + '/' + to_string(nConnections);
+    else if(type == 6) outputDir = "../output/output_local_search_" + aux + '/' + to_string(nConnections);
 
     try {
         if (fs::exists(outputDir) && first){
@@ -73,6 +75,10 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
 
     string popFile = outputDir + "/population.txt";
     *populationFile = fopen(popFile.c_str(), "a");
+
+    // Composicao de canais da solucao final: uma linha por instancia com "c20 c40 c80 c160".
+    string chanFile = outputDir + "/channels.txt";
+    *channelsFile = fopen(chanFile.c_str(), "a");
 }
 
 int main(int argc, char **argv) {
@@ -82,6 +88,9 @@ int main(int argc, char **argv) {
     }
 
     type = stod(argv[1]);
+
+    // So faz sentido para o type 6 (unico decoder com localSearchType6).
+    applyEliteLS = (type == 6) && USE_ELITE_LS;
 
     const fs::path instancesDir = "../instances";
 
@@ -105,8 +114,8 @@ int main(int argc, char **argv) {
             break; 
         }
         
-        FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr, *populationFile = nullptr;
-        init(entry, &solutionFile, &objectivesFile, &timeFile, &populationFile);
+        FILE *solutionFile = nullptr,  *objectivesFile = nullptr, *timeFile = nullptr, *populationFile = nullptr, *channelsFile = nullptr;
+        init(entry, &solutionFile, &objectivesFile, &timeFile, &populationFile, &channelsFile);
         evaluations = 0;
         const unsigned n = numberVariables;
         
@@ -137,6 +146,7 @@ int main(int argc, char **argv) {
 
         // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
         for(int i = 0; i < 1000; i++){
+            cout << "AQUI: " << i << endl;
             // refine = (rng.randInt(1) == 1);
             
             algorithm.evolve();
@@ -177,9 +187,32 @@ int main(int argc, char **argv) {
             exit(13);
         }
 
-        if (objectivesFile != nullptr) fprintf(objectivesFile, "%lf %lld %lld\n", -1.0 * algorithm.getBestFitness(), evaluations, count_improvements);
+        // type 6 (Pacote 1): aplica a busca local SÓ na melhor solução, ao final.
+        // Aproveita esse decode da melhor solução para coletar a composição de canais
+        // (channels.txt). Para os demais tipos, decodifica a melhor uma vez só p/ os canais.
+        double finalFitness = algorithm.getBestFitness();
+        {
+            vector<double> bestChromo = algorithm.getBestChromosome();
+            collectChannels = true;
+            if (type == 6) applyFinalLS = true;
+            double f = decoder.decode(bestChromo);   // preenche channelBandCount
+            if (type == 6) { finalFitness = f; applyFinalLS = false; }
+            collectChannels = false;
+        }
+
+        if (objectivesFile != nullptr) fprintf(objectivesFile, "%lf %lld %lld\n", -1.0 * finalFitness, evaluations, count_improvements);
         else {
-            cout << stderr << "objectivesFiles is null!" << endl;  
+            cout << stderr << "objectivesFiles is null!" << endl;
+            exit(13);
+        }
+
+        // Uma linha por instancia: contagem de canais de 20/40/80/160 MHz na solucao final.
+        if (channelsFile != nullptr) {
+            fprintf(channelsFile, "%lld %lld %lld %lld\n",
+                    channelBandCount[20], channelBandCount[40],
+                    channelBandCount[80], channelBandCount[160]);
+        } else {
+            cout << stderr << "channelsFile is null!" << endl;
             exit(13);
         }
 
@@ -193,6 +226,7 @@ int main(int argc, char **argv) {
         fclose(objectivesFile);
         fclose(timeFile);
         fclose(populationFile);
+        fclose(channelsFile);
     }
         
     exit(0);

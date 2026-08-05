@@ -1,0 +1,401 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 45.27   1327.32  1327.32 1504180486     0.00     0.00  insertInChannel(Channel, int)
+ 31.35   2246.52   919.20 2068727560     0.00     0.00  void std::__heap_select<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+ 14.68   2677.08   430.56  4585351     0.00     0.00  insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&)
+  7.13   2886.16   209.08 2199009112     0.00     0.00  void std::vector<Connection, std::allocator<Connection> >::_M_realloc_insert<Connection&>(__gnu_cxx::__normal_iterator<Connection*, std::vector<Connection, std::allocator<Connection> > >, Connection&)
+  0.33   2895.82     9.66 363296101     0.00     0.00  void std::vector<int, std::allocator<int> >::_M_realloc_insert<int const&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int const&)
+  0.28   2903.98     8.16 2537609004     0.00     0.00  Connection::Connection(int, double, double, double)
+  0.25   2911.37     7.39     7931     0.00     0.00  checkFeasibility(Solution const&, int)
+  0.22   2917.78     6.40                             _init
+  0.15   2922.05     4.27                             dp(Solution)
+  0.10   2925.09     3.04     3802     0.00     0.77  runLocalSearch(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&)
+  0.10   2928.03     2.94 13704537     0.00     0.00  void std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > >::_M_realloc_insert<std::pair<double, Connection> >(__gnu_cxx::__normal_iterator<std::pair<double, Connection>*, std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > > >, std::pair<double, Connection>&&)
+  0.05   2929.47     1.44  8630025     0.00     0.00  void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&)
+  0.05   2930.80     1.33                             main
+  0.02   2931.36     0.56                             void std::__heap_select<__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter)
+  0.01   2931.70     0.34 160402590     0.00     0.00  Channel::Channel(int)
+  0.01   2931.90     0.20     9248     0.00     0.32  Solution::decode(std::vector<double, std::allocator<double> >&) const
+  0.01   2932.06     0.17  9393750     0.00     0.00  void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
+  0.00   2932.17     0.11 39130628     0.00     0.00  Channel::Channel()
+  0.00   2932.25     0.08  8229154     0.00     0.00  void std::vector<double, std::allocator<double> >::_M_realloc_insert<double const&>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double const&)
+  0.00   2932.29     0.04                             Channel::Channel(double, double, double, int, std::vector<Connection, std::allocator<Connection> >)
+  0.00   2932.31     0.02     9656     0.00     0.00  void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&)
+  0.00   2932.33     0.02     2023     0.00     1.44  frame_dummy
+  0.00   2932.35     0.02        1     0.02     0.02  loadData()
+  0.00   2932.36     0.01   803800     0.00     0.00  void std::__move_median_to_first<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+  0.00   2932.37     0.01    40721     0.00     0.00  void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<Channel const&>(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, Channel const&)
+  0.00   2932.38     0.01                             runNewHeuristic(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&)
+  0.00   2932.38     0.00   105541     0.00     0.00  Channel* std::__do_uninit_copy<__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*>(__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, __gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*)
+  0.00   2932.38     0.00    34161     0.00     0.00  Spectrum::Spectrum(int, int, std::vector<Channel, std::allocator<Channel> >)
+  0.00   2932.38     0.00     8094     0.00     0.00  TimeSlot::TimeSlot(std::vector<Spectrum, std::allocator<Spectrum> >)
+  0.00   2932.38     0.00     7095     0.00     0.00  void std::__insertion_sort<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+  0.00   2932.38     0.00        4     0.00     0.00  std::_Rb_tree<int, std::pair<int const, long long>, std::_Select1st<std::pair<int const, long long> >, std::less<int>, std::allocator<std::pair<int const, long long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, long long> >, int const&)
+  0.00   2932.38     0.00        3     0.00     0.00  void std::vector<Spectrum, std::allocator<Spectrum> >::_M_realloc_insert<int&, int, std::vector<Channel, std::allocator<Channel> > >(__gnu_cxx::__normal_iterator<Spectrum*, std::vector<Spectrum, std::allocator<Spectrum> > >, int&, int&&, std::vector<Channel, std::allocator<Channel> >&&)
+  0.00   2932.38     0.00        3     0.00     0.00  std::vector<Spectrum, std::allocator<Spectrum> >::~vector()
+  0.00   2932.38     0.00        3     0.00     0.00  void std::vector<int, std::allocator<int> >::_M_realloc_insert<int&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int&)
+  0.00   2932.38     0.00        2     0.00     0.95  Population::Population(unsigned int, unsigned int)
+  0.00   2932.38     0.00        2     0.00     0.00  std::filesystem::__cxx11::path::~path()
+  0.00   2932.38     0.00        2     0.00     0.00  std::__shared_count<(__gnu_cxx::_Lock_policy)2>::__shared_count(std::__shared_count<(__gnu_cxx::_Lock_policy)2> const&)
+  0.00   2932.38     0.00        2     0.00     0.00  std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release()
+  0.00   2932.38     0.00        1     0.00     0.00  initTimeSlot()
+  0.00   2932.38     0.00        1     0.00     0.02  init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**)
+  0.00   2932.38     0.00        1     0.00     0.00  Population::Population(Population const&)
+  0.00   2932.38     0.00        1     0.00     3.83  BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int)
+  0.00   2932.38     0.00        1     0.00     0.00  BRKGA<Solution, MTRand>::~BRKGA()
+  0.00   2932.38     0.00        1     0.00     0.00  MTRand::seed()
+  0.00   2932.38     0.00        1     0.00     0.00  std::filesystem::__cxx11::path::extension() const
+  0.00   2932.38     0.00        1     0.00     0.00  void std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> >::_M_realloc_insert<std::filesystem::__cxx11::path const&>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, std::filesystem::__cxx11::path const&)
+  0.00   2932.38     0.00        1     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2023 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.00% of 2932.38 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     99.6    1.33 2919.77                 main [1]
+                0.02 2914.63    2021/2023        frame_dummy [3]
+                0.00    3.83       1/1           BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [14]
+                0.00    0.95       1/2           Population::Population(unsigned int, unsigned int) [16]
+                0.00    0.32       1/9248        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+                0.00    0.02       1/1           init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**) [24]
+                0.00    0.00       2/2           std::__shared_count<(__gnu_cxx::_Lock_policy)2>::__shared_count(std::__shared_count<(__gnu_cxx::_Lock_policy)2> const&) [45]
+                0.00    0.00       2/2           std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() [46]
+                0.00    0.00       2/2           std::filesystem::__cxx11::path::~path() [44]
+                0.00    0.00       1/1           std::filesystem::__cxx11::path::extension() const [50]
+                0.00    0.00       1/1           BRKGA<Solution, MTRand>::~BRKGA() [48]
+                0.00    0.00       1/1           void std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> >::_M_realloc_insert<std::filesystem::__cxx11::path const&>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, std::filesystem::__cxx11::path const&) [51]
+-----------------------------------------------
+                0.00    0.32       1/9248        main [1]
+                0.00    1.89       6/9248        Population::Population(unsigned int, unsigned int) [16]
+                0.20 2917.32    9241/9248        frame_dummy [3]
+[2]     99.6    0.20 2919.53    9248         Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+                3.04 2905.51    3802/3802        runLocalSearch(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [4]
+                7.39    1.88    7931/7931        checkFeasibility(Solution const&, int) [10]
+                1.42    0.01 8530403/8630025     void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+                0.17    0.00 9393750/9393750     void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [20]
+                0.08    0.00 8229154/8229154     void std::vector<double, std::allocator<double> >::_M_realloc_insert<double const&>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double const&) [22]
+                0.02    0.00    9656/9656        void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&) [26]
+                0.00    0.02    7095/7095        void std::__insertion_sort<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [27]
+                0.00    0.00   85181/105541      Channel* std::__do_uninit_copy<__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*>(__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, __gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*) [37]
+                0.00    0.00   34159/34161       Spectrum::Spectrum(int, int, std::vector<Channel, std::allocator<Channel> >) [38]
+                0.00    0.00       4/4           std::_Rb_tree<int, std::pair<int const, long long>, std::_Select1st<std::pair<int const, long long> >, std::less<int>, std::allocator<std::pair<int const, long long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, long long> >, int const&) [40]
+-----------------------------------------------
+                               10319             frame_dummy [3]
+                0.00    2.88       2/2023        BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [14]
+                0.02 2914.63    2021/2023        main [1]
+[3]     99.5    0.02 2917.52    2023+10319   frame_dummy [3]
+                0.20 2917.32    9241/9248        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+                               10319             frame_dummy [3]
+-----------------------------------------------
+                3.04 2905.51    3802/3802        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[4]     99.2    3.04 2905.51    3802         runLocalSearch(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [4]
+              430.56 2474.95 4585351/4585351     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+-----------------------------------------------
+              430.56 2474.95 4585351/4585351     runLocalSearch(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [4]
+[5]     99.1  430.56 2474.95 4585351         insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+             1327.32 1134.56 1504180486/1504180486     insertInChannel(Channel, int) [6]
+                9.66    0.00 363296101/363296101     void std::vector<int, std::allocator<int> >::_M_realloc_insert<int const&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int const&) [9]
+                2.94    0.00 13704537/13704537     void std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > >::_M_realloc_insert<std::pair<double, Connection> >(__gnu_cxx::__normal_iterator<std::pair<double, Connection>*, std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > > >, std::pair<double, Connection>&&) [15]
+                0.34    0.00 160402590/160402590     Channel::Channel(int) [19]
+                0.11    0.00 39130628/39130628     Channel::Channel() [21]
+                0.01    0.00   40721/40721       void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<Channel const&>(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, Channel const&) [29]
+-----------------------------------------------
+             1327.32 1134.56 1504180486/1504180486     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[6]     84.0 1327.32 1134.56 1504180486         insertInChannel(Channel, int) [6]
+              917.32    0.00 2064500071/2068727560     void std::__heap_select<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [7]
+              209.08    0.00 2199009112/2199009112     void std::vector<Connection, std::allocator<Connection> >::_M_realloc_insert<Connection&>(__gnu_cxx::__normal_iterator<Connection*, std::vector<Connection, std::allocator<Connection> > >, Connection&) [8]
+                8.16    0.00 2537609004/2537609004     Connection::Connection(int, double, double, double) [11]
+-----------------------------------------------
+                1.88    0.00 4227489/2068727560     checkFeasibility(Solution const&, int) [10]
+              917.32    0.00 2064500071/2068727560     insertInChannel(Channel, int) [6]
+[7]     31.3  919.20    0.00 2068727560         void std::__heap_select<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [7]
+-----------------------------------------------
+              209.08    0.00 2199009112/2199009112     insertInChannel(Channel, int) [6]
+[8]      7.1  209.08    0.00 2199009112         void std::vector<Connection, std::allocator<Connection> >::_M_realloc_insert<Connection&>(__gnu_cxx::__normal_iterator<Connection*, std::vector<Connection, std::allocator<Connection> > >, Connection&) [8]
+-----------------------------------------------
+                9.66    0.00 363296101/363296101     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[9]      0.3    9.66    0.00 363296101         void std::vector<int, std::allocator<int> >::_M_realloc_insert<int const&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int const&) [9]
+-----------------------------------------------
+                7.39    1.88    7931/7931        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[10]     0.3    7.39    1.88    7931         checkFeasibility(Solution const&, int) [10]
+                1.88    0.00 4227489/2068727560     void std::__heap_select<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [7]
+-----------------------------------------------
+                8.16    0.00 2537609004/2537609004     insertInChannel(Channel, int) [6]
+[11]     0.3    8.16    0.00 2537609004         Connection::Connection(int, double, double, double) [11]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     0.2    6.40    0.00                 _init [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[13]     0.1    4.27    0.00                 dp(Solution) [13]
+-----------------------------------------------
+                0.00    3.83       1/1           main [1]
+[14]     0.1    0.00    3.83       1         BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [14]
+                0.00    2.88       2/2023        frame_dummy [3]
+                0.00    0.95       1/2           Population::Population(unsigned int, unsigned int) [16]
+                0.00    0.00       1/1           Population::Population(Population const&) [47]
+-----------------------------------------------
+                2.94    0.00 13704537/13704537     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[15]     0.1    2.94    0.00 13704537         void std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > >::_M_realloc_insert<std::pair<double, Connection> >(__gnu_cxx::__normal_iterator<std::pair<double, Connection>*, std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > > >, std::pair<double, Connection>&&) [15]
+-----------------------------------------------
+                0.00    0.95       1/2           main [1]
+                0.00    0.95       1/2           BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [14]
+[16]     0.1    0.00    1.89       2         Population::Population(unsigned int, unsigned int) [16]
+                0.00    1.89       6/9248        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+-----------------------------------------------
+                              590142             void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+                0.00    0.00       5/8630025     initTimeSlot() [31]
+                0.02    0.00   99617/8630025     void std::__insertion_sort<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [27]
+                1.42    0.01 8530403/8630025     Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[17]     0.0    1.44    0.01 8630025+590142  void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+                0.01    0.00  803800/803800      void std::__move_median_to_first<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [28]
+                              590142             void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+-----------------------------------------------
+                                                 <spontaneous>
+[18]     0.0    0.56    0.00                 void std::__heap_select<__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter) [18]
+-----------------------------------------------
+                0.34    0.00 160402590/160402590     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[19]     0.0    0.34    0.00 160402590         Channel::Channel(int) [19]
+-----------------------------------------------
+                0.17    0.00 9393750/9393750     Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[20]     0.0    0.17    0.00 9393750         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [20]
+-----------------------------------------------
+                0.11    0.00 39130628/39130628     insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[21]     0.0    0.11    0.00 39130628         Channel::Channel() [21]
+-----------------------------------------------
+                0.08    0.00 8229154/8229154     Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[22]     0.0    0.08    0.00 8229154         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double const&>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double const&) [22]
+-----------------------------------------------
+                                                 <spontaneous>
+[23]     0.0    0.04    0.00                 Channel::Channel(double, double, double, int, std::vector<Connection, std::allocator<Connection> >) [23]
+-----------------------------------------------
+                0.00    0.02       1/1           main [1]
+[24]     0.0    0.00    0.02       1         init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**) [24]
+                0.02    0.00       1/1           loadData() [25]
+                0.00    0.00       1/1           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [52]
+-----------------------------------------------
+                0.02    0.00       1/1           init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**) [24]
+[25]     0.0    0.02    0.00       1         loadData() [25]
+                0.00    0.00       1/1           initTimeSlot() [31]
+                0.00    0.00       3/3           void std::vector<Spectrum, std::allocator<Spectrum> >::_M_realloc_insert<int&, int, std::vector<Channel, std::allocator<Channel> > >(__gnu_cxx::__normal_iterator<Spectrum*, std::vector<Spectrum, std::allocator<Spectrum> > >, int&, int&&, std::vector<Channel, std::allocator<Channel> >&&) [41]
+                0.00    0.00       3/3           void std::vector<int, std::allocator<int> >::_M_realloc_insert<int&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int&) [43]
+                0.00    0.00       2/34161       Spectrum::Spectrum(int, int, std::vector<Channel, std::allocator<Channel> >) [38]
+-----------------------------------------------
+                0.02    0.00    9656/9656        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[26]     0.0    0.02    0.00    9656         void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&) [26]
+                0.00    0.00   20360/105541      Channel* std::__do_uninit_copy<__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*>(__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, __gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*) [37]
+                0.00    0.00    8094/8094        TimeSlot::TimeSlot(std::vector<Spectrum, std::allocator<Spectrum> >) [39]
+-----------------------------------------------
+                0.00    0.02    7095/7095        Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[27]     0.0    0.00    0.02    7095         void std::__insertion_sort<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [27]
+                0.02    0.00   99617/8630025     void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+-----------------------------------------------
+                0.01    0.00  803800/803800      void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+[28]     0.0    0.01    0.00  803800         void std::__move_median_to_first<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter) [28]
+-----------------------------------------------
+                0.01    0.00   40721/40721       insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [5]
+[29]     0.0    0.01    0.00   40721         void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<Channel const&>(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, Channel const&) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[30]     0.0    0.01    0.00                 runNewHeuristic(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [30]
+-----------------------------------------------
+                0.00    0.00       1/1           loadData() [25]
+[31]     0.0    0.00    0.00       1         initTimeSlot() [31]
+                0.00    0.00       5/8630025     void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [17]
+-----------------------------------------------
+                0.00    0.00   20360/105541      void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&) [26]
+                0.00    0.00   85181/105541      Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[37]     0.0    0.00    0.00  105541         Channel* std::__do_uninit_copy<__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*>(__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, __gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*) [37]
+-----------------------------------------------
+                0.00    0.00       2/34161       loadData() [25]
+                0.00    0.00   34159/34161       Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[38]     0.0    0.00    0.00   34161         Spectrum::Spectrum(int, int, std::vector<Channel, std::allocator<Channel> >) [38]
+-----------------------------------------------
+                0.00    0.00    8094/8094        void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&) [26]
+[39]     0.0    0.00    0.00    8094         TimeSlot::TimeSlot(std::vector<Spectrum, std::allocator<Spectrum> >) [39]
+-----------------------------------------------
+                0.00    0.00       4/4           Solution::decode(std::vector<double, std::allocator<double> >&) const [2]
+[40]     0.0    0.00    0.00       4         std::_Rb_tree<int, std::pair<int const, long long>, std::_Select1st<std::pair<int const, long long> >, std::less<int>, std::allocator<std::pair<int const, long long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, long long> >, int const&) [40]
+-----------------------------------------------
+                0.00    0.00       3/3           loadData() [25]
+[41]     0.0    0.00    0.00       3         void std::vector<Spectrum, std::allocator<Spectrum> >::_M_realloc_insert<int&, int, std::vector<Channel, std::allocator<Channel> > >(__gnu_cxx::__normal_iterator<Spectrum*, std::vector<Spectrum, std::allocator<Spectrum> > >, int&, int&&, std::vector<Channel, std::allocator<Channel> >&&) [41]
+-----------------------------------------------
+                0.00    0.00       3/3           std::map<int, long long, std::less<int>, std::allocator<std::pair<int const, long long> > >::~map() [95]
+[42]     0.0    0.00    0.00       3         std::vector<Spectrum, std::allocator<Spectrum> >::~vector() [42]
+-----------------------------------------------
+                0.00    0.00       3/3           loadData() [25]
+[43]     0.0    0.00    0.00       3         void std::vector<int, std::allocator<int> >::_M_realloc_insert<int&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int&) [43]
+-----------------------------------------------
+                0.00    0.00       2/2           main [1]
+[44]     0.0    0.00    0.00       2         std::filesystem::__cxx11::path::~path() [44]
+-----------------------------------------------
+                0.00    0.00       2/2           main [1]
+[45]     0.0    0.00    0.00       2         std::__shared_count<(__gnu_cxx::_Lock_policy)2>::__shared_count(std::__shared_count<(__gnu_cxx::_Lock_policy)2> const&) [45]
+-----------------------------------------------
+                0.00    0.00       2/2           main [1]
+[46]     0.0    0.00    0.00       2         std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() [46]
+-----------------------------------------------
+                0.00    0.00       1/1           BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [14]
+[47]     0.0    0.00    0.00       1         Population::Population(Population const&) [47]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[48]     0.0    0.00    0.00       1         BRKGA<Solution, MTRand>::~BRKGA() [48]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I_distanceMatrix [62]
+[49]     0.0    0.00    0.00       1         MTRand::seed() [49]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[50]     0.0    0.00    0.00       1         std::filesystem::__cxx11::path::extension() const [50]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[51]     0.0    0.00    0.00       1         void std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> >::_M_realloc_insert<std::filesystem::__cxx11::path const&>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, std::filesystem::__cxx11::path const&) [51]
+-----------------------------------------------
+                0.00    0.00       1/1           init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**) [24]
+[52]     0.0    0.00    0.00       1         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [52]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2023 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [31] initTimeSlot()         [21] Channel::Channel()     [15] void std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > >::_M_realloc_insert<std::pair<double, Connection> >(__gnu_cxx::__normal_iterator<std::pair<double, Connection>*, std::vector<std::pair<double, Connection>, std::allocator<std::pair<double, Connection> > > >, std::pair<double, Connection>&&)
+   [4] runLocalSearch(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [19] Channel::Channel(int) [22] void std::vector<double, std::allocator<double> >::_M_realloc_insert<double const&>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double const&)
+   [6] insertInChannel(Channel, int) [38] Spectrum::Spectrum(int, int, std::vector<Channel, std::allocator<Channel> >) [20] void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
+  [30] runNewHeuristic(Solution&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<double, std::allocator<double> >&) [39] TimeSlot::TimeSlot(std::vector<Spectrum, std::allocator<Spectrum> >) [9] void std::vector<int, std::allocator<int> >::_M_realloc_insert<int const&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int const&)
+  [10] checkFeasibility(Solution const&, int) [2] Solution::decode(std::vector<double, std::allocator<double> >&) const [43] void std::vector<int, std::allocator<int> >::_M_realloc_insert<int&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int&)
+   [5] insertInBestChannel(Solution&, int, std::vector<double, std::allocator<double> >&) [50] std::filesystem::__cxx11::path::extension() const [40] std::_Rb_tree<int, std::pair<int const, long long>, std::_Select1st<std::pair<int const, long long> >, std::less<int>, std::allocator<std::pair<int const, long long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, long long> >, int const&)
+  [13] dp(Solution)           [44] std::filesystem::__cxx11::path::~path() [18] void std::__heap_select<__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, __gnu_cxx::__ops::_Iter_less_iter)
+  [24] init(std::filesystem::__cxx11::path const&, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**, _IO_FILE**) [45] std::__shared_count<(__gnu_cxx::_Lock_policy)2>::__shared_count(std::__shared_count<(__gnu_cxx::_Lock_policy)2> const&) [7] void std::__heap_select<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+  [25] loadData()             [46] std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() [37] Channel* std::__do_uninit_copy<__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*>(__gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, __gnu_cxx::__normal_iterator<Channel const*, std::vector<Channel, std::allocator<Channel> > >, Channel*)
+  [11] Connection::Connection(int, double, double, double) [8] void std::vector<Connection, std::allocator<Connection> >::_M_realloc_insert<Connection&>(__gnu_cxx::__normal_iterator<Connection*, std::vector<Connection, std::allocator<Connection> > >, Connection&) [27] void std::__insertion_sort<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+  [47] Population::Population(Population const&) [29] void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<Channel const&>(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, Channel const&) [28] void std::__move_median_to_first<__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__normal_iterator<std::vector<double, std::allocator<double> >*, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > >, __gnu_cxx::__ops::_Iter_less_iter)
+  [16] Population::Population(unsigned int, unsigned int) [17] void std::vector<Channel, std::allocator<Channel> >::_M_realloc_insert<double, double, double, int&, std::vector<Connection, std::allocator<Connection> > >(__gnu_cxx::__normal_iterator<Channel*, std::vector<Channel, std::allocator<Channel> > >, double&&, double&&, double&&, int&, std::vector<Connection, std::allocator<Connection> >&&) [52] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  [14] BRKGA<Solution, MTRand>::BRKGA(unsigned int, unsigned int, double, double, double, Solution const&, unsigned int, unsigned int) [41] void std::vector<Spectrum, std::allocator<Spectrum> >::_M_realloc_insert<int&, int, std::vector<Channel, std::allocator<Channel> > >(__gnu_cxx::__normal_iterator<Spectrum*, std::vector<Spectrum, std::allocator<Spectrum> > >, int&, int&&, std::vector<Channel, std::allocator<Channel> >&&) [12] _init
+  [48] BRKGA<Solution, MTRand>::~BRKGA() [42] std::vector<Spectrum, std::allocator<Spectrum> >::~vector() [3] frame_dummy
+  [49] MTRand::seed()         [26] void std::vector<TimeSlot, std::allocator<TimeSlot> >::_M_realloc_insert<std::vector<Spectrum, std::allocator<Spectrum> > const&>(__gnu_cxx::__normal_iterator<TimeSlot*, std::vector<TimeSlot, std::allocator<TimeSlot> > >, std::vector<Spectrum, std::allocator<Spectrum> > const&) [1] main
+  [23] Channel::Channel(double, double, double, int, std::vector<Connection, std::allocator<Connection> >) [51] void std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> >::_M_realloc_insert<std::filesystem::__cxx11::path const&>(__gnu_cxx::__normal_iterator<std::filesystem::__cxx11::path*, std::vector<std::filesystem::__cxx11::path, std::allocator<std::filesystem::__cxx11::path> > >, std::filesystem::__cxx11::path const&)

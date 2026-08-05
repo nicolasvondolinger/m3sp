@@ -113,7 +113,7 @@ if __name__ == "__main__":
         random.seed(seed_val)
         
         # Opcional: Adicionar o seed no nome do arquivo para rastreabilidade
-        filename = f"instance_{i}.txt" 
+        filename = f"{TYPE}_{num_devices}_instance_{i}.txt" 
         filepath = os.path.join(instance_dir, filename)
         
         createInstance(filepath, TYPE, num_devices, dimension)

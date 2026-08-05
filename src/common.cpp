@@ -17,6 +17,10 @@ double powerSender, alfa, noise, ttm;
 vector<Spectrum> init_conf;
 vector<int> spectrum_size;
 bool refine = false;
+bool applyFinalLS = false;
+bool applyEliteLS = false;
+bool collectChannels = false;
+map<int, long long> channelBandCount;
 long long count_improvements = 0;
 
 Connection::Connection(int id, double throughput, double interference, double distanceSR)

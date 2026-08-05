@@ -327,6 +327,21 @@ inline void BRKGA< Decoder, RNG >::evolution(Population& curr, Population& next)
 		next.setFitness( i, refDecoder.decode(next.population[i]) );
 	}
 
+	// type 6: reaplica localSearchType6 nas pe elites a cada geracao, se habilitado.
+	// Baldwiniano: re-decodifica com LS e atualiza SO o fitness; o cromossomo (elite em
+	// next.population[0..pe-1]) permanece inalterado, entao os filhos herdam a chave crua.
+	if(applyEliteLS) {
+		applyFinalLS = true;
+		#ifdef _OPENMP
+			#pragma omp parallel for num_threads(MAX_THREADS)
+		#endif
+		for(int e = 0; e < int(pe); ++e) {
+			++evaluations;
+			next.setFitness( e, refDecoder.decode(next.population[e]) );
+		}
+		applyFinalLS = false;
+	}
+
 	// Now we must sort 'current' by fitness, since things might have changed:
 //	exit(44);
 	next.sortFitness();
