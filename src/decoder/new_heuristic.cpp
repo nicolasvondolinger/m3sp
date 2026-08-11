@@ -9,9 +9,9 @@ void insertInBestChannel(Solution& sol, int idConnection, vector<double>& variab
     for(int t = 0; t < sol.slots.size(); t++){
         for(int s = 0; s < sol.slots[t].spectrums.size(); s++){
             int freeSpec = sol.slots[t].spectrums[s].maxFrequency - sol.slots[t].spectrums[s].usedFrequency;
-            if(freeSpec > 160) freeSpec = 160;
-            else if (freeSpec > 80) freeSpec = 80;
-            else if(freeSpec > 40) freeSpec = 40;
+            if(freeSpec >= 160) freeSpec = 160;
+            else if (freeSpec >= 80) freeSpec = 80;
+            else if(freeSpec >= 40) freeSpec = 40;
 
             if(freeSpec != 0){
                 Channel temp(freeSpec);
