@@ -1,0 +1,21 @@
+TODO: choose a license for this project.
+
+No license has been chosen yet, so this file is a placeholder that exists only
+to hold the slot in the project layout. Until real terms are written here,
+default copyright law applies: the work is "all rights reserved" and nobody
+else has permission to use, copy, modify or distribute it.
+
+Common choices for academic/research code:
+
+  - MIT          permissive, very short, requires attribution
+  - BSD-3-Clause permissive, adds a no-endorsement clause
+  - Apache-2.0   permissive, adds an explicit patent grant
+  - GPL-3.0      copyleft, derivative works must stay open
+
+Note that extern/ contains third-party code under its own terms, which this
+file does not override:
+
+  - extern/brkga/  BRKGA framework by Rodrigo Franco Toso
+  - extern/mtrand/ Mersenne Twister by Richard J. Wagner
+
+Replace the whole of this file with the chosen license text.

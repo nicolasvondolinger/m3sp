@@ -1,2 +1,15 @@
+# Build tree
+build/
+
+# Experiment results
 output/
-output/
+
+# Profiling artefacts
+gmon.out
+callgrind.out.*
+
+# Editor / OS noise
+*.swp
+nohup.out
+.cache/
+compile_commands.json

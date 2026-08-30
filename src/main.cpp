@@ -1,6 +1,6 @@
-#include "../include/common.h"
-#include "../include/brkga.h"
-#include "../include/decoder.h"
+#include "m3sp/common.h"
+#include "brkga.h"
+#include "m3sp/decoder.h"
 
 namespace fs = std::filesystem;
 
@@ -19,9 +19,48 @@ const unsigned X_INTVL = 100;
 const unsigned X_NUMBER = 2;
 const unsigned MAX_GENS = 1000;
 
-// type 6: se true, aplica localSearchType6 nas pe elites a cada geracao
-// (alem da LS final na melhor solucao). Edite e recompile para alternar.
+// type "local_search": se true, aplica localSearchType6 nas pe elites a cada
+// geracao (alem da LS final na melhor solucao).
 const bool USE_ELITE_LS = true;
+
+// Heuristicas aceitas em argv[1]; devem casar com o dispatch em decoder.cpp.
+const vector<string> KNOWN_TYPES = {"mic", "dp", "gcsid", "gcsid_plus", "gcsid_greedy", "local_search"};
+
+const fs::path INSTANCES_ROOT = "../instances";
+
+// Conjunto de instancias escolhido em argv[2]: um subdiretorio de ../instances
+// (ex.: "vrbsp", "md_vrbsp"). Entra no caminho de saida, senao rodadas de
+// conjuntos diferentes sobrescreveriam os resultados umas das outras.
+string instanceSet;
+
+// Subdiretorios de ../instances, em ordem alfabetica. Descobertos em tempo de
+// execucao: acrescentar um conjunto novo nao exige recompilar.
+vector<string> availableInstanceSets() {
+    vector<string> sets;
+    if (!fs::exists(INSTANCES_ROOT)) return sets;
+    for (const auto& entry : fs::directory_iterator(INSTANCES_ROOT))
+        if (entry.is_directory()) sets.push_back(entry.path().filename().string());
+    sort(sets.begin(), sets.end());
+    return sets;
+}
+
+void usage(const vector<string>& sets) {
+    cerr << "usage: m3sp <type> <instance-set>" << endl;
+
+    cerr << "  type:         ";
+    for (size_t i = 0; i < KNOWN_TYPES.size(); i++)
+        cerr << KNOWN_TYPES[i] << (i + 1 < KNOWN_TYPES.size() ? " | " : "");
+    cerr << endl;
+
+    cerr << "  instance-set: ";
+    if (sets.empty()) {
+        cerr << "(no subdirectory found in " << INSTANCES_ROOT << ")";
+    } else {
+        for (size_t i = 0; i < sets.size(); i++)
+            cerr << sets[i] << (i + 1 < sets.size() ? " | " : "");
+    }
+    cerr << endl;
+}
 
 void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFile, FILE **timeFile, FILE **populationFile, FILE **channelsFile) {
     if (!instancePath.empty()) {
@@ -41,11 +80,14 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
 
     ostringstream oss; oss << (pe * 100); 
     string aux = oss.str();
-    if(type == 0) outputDir = "../output/output_" + aux + '/' + to_string(nConnections);
-    else if(type == 1 || type == 4) outputDir = "../output/output_dp_" + aux + '/' + to_string(nConnections);
-    else if (type == 3) outputDir = "../output/output_random_dp_" + aux + '/' + to_string(nConnections);
-    else if(type == 5) outputDir = "../output/output_new_heuristic_2_" + aux + '/' + to_string(nConnections);
-    else if(type == 6) outputDir = "../output/output_local_search_" + aux + '/' + to_string(nConnections);
+    // ../output/<instance-set>/output_<type>_<pe>/<nConnections>
+    const string base = "../output/" + instanceSet + "/output_";
+    if(type == "mic") outputDir = base + "mic_" + aux + '/' + to_string(nConnections);
+    else if(type == "dp") outputDir = base + "dp_" + aux + '/' + to_string(nConnections);
+    else if(type == "gcsid") outputDir = base + "gcsid_" + aux + '/' + to_string(nConnections);
+    else if(type == "gcsid_plus") outputDir = base + "gcsid_plus_" + aux + '/' + to_string(nConnections);
+    else if(type == "gcsid_greedy") outputDir = base + "gcsid_greedy_" + aux + '/' + to_string(nConnections);
+    else if(type == "local_search") outputDir = base + "local_search_" + aux + '/' + to_string(nConnections);
 
     try {
         if (fs::exists(outputDir) && first){
@@ -82,17 +124,33 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        cout << stderr << "Choose type: Classic - 0 | Classic DP - 1 | Fixed DP - 2" << endl;
+    const vector<string> instanceSets = availableInstanceSets();
+
+    if (argc < 3) {
+        usage(instanceSets);
         exit(1);
     }
 
-    type = stod(argv[1]);
+    type = argv[1];
 
-    // So faz sentido para o type 6 (unico decoder com localSearchType6).
-    applyEliteLS = (type == 6) && USE_ELITE_LS;
+    if (find(KNOWN_TYPES.begin(), KNOWN_TYPES.end(), type) == KNOWN_TYPES.end()) {
+        cerr << "unknown type '" << type << "'" << endl;
+        usage(instanceSets);
+        exit(1);
+    }
 
-    const fs::path instancesDir = "../instances";
+    instanceSet = argv[2];
+
+    if (find(instanceSets.begin(), instanceSets.end(), instanceSet) == instanceSets.end()) {
+        cerr << "unknown instance set '" << instanceSet << "'" << endl;
+        usage(instanceSets);
+        exit(1);
+    }
+
+    // So faz sentido para o type "local_search" (unico decoder com localSearchType6).
+    applyEliteLS = (type == "local_search") && USE_ELITE_LS;
+
+    const fs::path instancesDir = INSTANCES_ROOT / instanceSet;
 
     vector<fs::path> instanceFiles;
 
@@ -100,6 +158,11 @@ int main(int argc, char **argv) {
         if (entry.is_regular_file() && entry.path().extension() == ".txt") {
             instanceFiles.push_back(entry.path());
         }
+    }
+
+    if (instanceFiles.empty()) {
+        cerr << "no .txt instance found in " << instancesDir << endl;
+        exit(1);
     }
 
     sort(instanceFiles.begin(), instanceFiles.end());
@@ -119,7 +182,9 @@ int main(int argc, char **argv) {
         evaluations = 0;
         const unsigned n = numberVariables;
         
-        rng.seed(prime_numbers[i]); i++;
+        rng.seed(prime_numbers[i]);
+        seedDecoderRng(prime_numbers[i]);  // um gerador por thread, mesma semente base
+        i++;
 
         count_improvements = 0;
         Solution decoder;
@@ -147,8 +212,7 @@ int main(int argc, char **argv) {
         // while (std::chrono::steady_clock::now() - startTime < DURATION_LIMIT) {
         for(int i = 0; i < 1000; i++){
             cout << "AQUI: " << i << endl;
-            // refine = (rng.randInt(1) == 1);
-            
+
             algorithm.evolve();
 
             if (populationFile != nullptr) {
@@ -187,16 +251,16 @@ int main(int argc, char **argv) {
             exit(13);
         }
 
-        // type 6 (Pacote 1): aplica a busca local SÓ na melhor solução, ao final.
+        // type "local_search" (Pacote 1): aplica a busca local SÓ na melhor solução, ao final.
         // Aproveita esse decode da melhor solução para coletar a composição de canais
         // (channels.txt). Para os demais tipos, decodifica a melhor uma vez só p/ os canais.
         double finalFitness = algorithm.getBestFitness();
         {
             vector<double> bestChromo = algorithm.getBestChromosome();
             collectChannels = true;
-            if (type == 6) applyFinalLS = true;
+            if (type == "local_search") applyFinalLS = true;
             double f = decoder.decode(bestChromo);   // preenche channelBandCount
-            if (type == 6) { finalFitness = f; applyFinalLS = false; }
+            if (type == "local_search") { finalFitness = f; applyFinalLS = false; }
             collectChannels = false;
         }
 

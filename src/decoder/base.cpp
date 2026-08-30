@@ -1,4 +1,4 @@
-#include "decoder/base.h"
+#include "m3sp/decoder/base.h"
 
 static bool approximatelyEqual(double a, double b, double epsilon = EPS) {
     return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
@@ -11,22 +11,29 @@ static int bandIndex(int band){
     return 0;
 }
 
+// Pure form of the MCS lookup: the rate link `id` sustains on a `band` MHz
+// channel while seeing `interference`. Exposed so a decoder can price a
+// candidate placement without materialising a Channel first;
+// computeConnectionThroughput below remains the only writer of Connection state.
+double linkThroughput(int id, double interference, int band){
+    if(band == 0) return 0.0;
+
+    if(approximatelyEqual(interference, 0.0, EPS)) return dataRates[11][bandIndex(band)];
+
+    const double sinr = affectance[id][id] / (interference + noise);
+    int MCS = 11;
+    while(MCS>=0 && sinr < SINR[MCS][bandIndex(band)]) MCS--;
+
+    return MCS < 0 ? 0.0 : dataRates[MCS][bandIndex(band)];
+}
+
 static double computeConnectionThroughput(Connection& connection, int band){
     if(band == 0) return 0;
-    int MCS = -1;
 
-    if(approximatelyEqual(connection.interference, 0.0, EPS)){
-        MCS = 11;
-        connection.throughput = dataRates[MCS][bandIndex(band)];
-    } else {
+    if(!approximatelyEqual(connection.interference, 0.0, EPS))
         connection.SINR = affectance[connection.id][connection.id] / (connection.interference + noise);
-        MCS = 11;
-        while(MCS>=0 && connection.SINR < SINR[MCS][bandIndex(band)]) MCS--;
 
-        if(MCS < 0) connection.throughput = 0.0;
-        else connection.throughput = dataRates[MCS][bandIndex(band)];
-    }
-
+    connection.throughput = linkThroughput(connection.id, connection.interference, band);
     return connection.throughput;
 }
 
@@ -102,8 +109,9 @@ static pair<double, vector<Channel>> dfs(Channel channel){
     for(const auto& conn : channel.connections) connection_ids.pb(conn.id);
 
     int n_conn = connection_ids.size();
+    MTRand& generator = decoderRng();
     for (int i = n_conn - 1; i > 0; --i) {
-        int j = rng.randInt(i);
+        int j = generator.randInt(i);
         std::swap(connection_ids[i], connection_ids[j]);
     }
 

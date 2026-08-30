@@ -1,4 +1,4 @@
-#include "decoder/local_search.h"
+#include "m3sp/decoder/local_search.h"
 
 static Channel removeFromChannel(Channel channel, int idToRemove){
     Channel result(channel.bandwidth);

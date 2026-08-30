@@ -1,4 +1,4 @@
-#include "../include/common.h"
+#include "m3sp/common.h"
 
 double distanceMatrix[MAX_CONN][MAX_CONN];
 double interferenceMatrix[MAX_CONN][MAX_CONN];
@@ -10,13 +10,50 @@ using namespace std;
 
 MTRand rng;
 
-int nConnections, nSpectrums, type;
+namespace {
+// Escrito apenas entre regioes paralelas (por seedDecoderRng), lido dentro
+// delas. A barreira implicita do OpenMP garante a visibilidade.
+unsigned long decoderSeedBase = 0;
+
+// FNV-1a sobre os bytes do cromossomo.
+unsigned long long chromosomeDigest(const vector<double>& chromosome) {
+    unsigned long long hash = 1469598103934665603ULL;
+
+    const unsigned char* bytes = reinterpret_cast<const unsigned char*>(chromosome.data());
+    const size_t total = chromosome.size() * sizeof(double);
+
+    for (size_t i = 0; i < total; i++) {
+        hash ^= bytes[i];
+        hash *= 1099511628211ULL;
+    }
+
+    return hash;
+}
+}  // namespace
+
+void seedDecoderRng(unsigned long baseSeed) {
+    decoderSeedBase = baseSeed;
+}
+
+MTRand& decoderRng() {
+    static thread_local MTRand generator;
+    return generator;
+}
+
+void seedDecoderRngForChromosome(const vector<double>& chromosome) {
+    const unsigned long long mixed =
+        chromosomeDigest(chromosome) * 6364136223846793005ULL + decoderSeedBase;
+
+    decoderRng().seed(static_cast<MTRand::uint32>(mixed ^ (mixed >> 32)));
+}
+
+int nConnections, nSpectrums;
+string type;
 vector<vector<double>> dataRates, SINR, beta;
 double powerSender, alfa, noise, ttm;
 
 vector<Spectrum> init_conf;
 vector<int> spectrum_size;
-bool refine = false;
 bool applyFinalLS = false;
 bool applyEliteLS = false;
 bool collectChannels = false;

@@ -1,12 +1,17 @@
-#include "decoder.h"
-#include "decoder/classic.h"
-#include "decoder/dp.h"
-#include "decoder/random_dp.h"
-#include "decoder/dp_rebuild.h"
-#include "decoder/new_heuristic.h"
-#include "decoder/local_search.h"
+#include "m3sp/decoder.h"
+#include "m3sp/decoder/mic.h"
+#include "m3sp/decoder/dp.h"
+#include "m3sp/decoder/gcsid.h"
+#include "m3sp/decoder/gcsid_plus.h"
+#include "m3sp/decoder/gcsid_greedy.h"
+#include "m3sp/decoder/local_search.h"
 
 double Solution::decode(vector<double>& variables) const {
+    // O fluxo aleatorio deriva do cromossomo, entao decode() e determinístico
+    // qualquer que seja a thread que o execute. Tem de vir antes de qualquer
+    // sorteio e antes de o mic reescrever genes de banda.
+    seedDecoderRngForChromosome(variables);
+
     int n = variables.size();
 
     vector<vector<double>> links(n/2);
@@ -25,12 +30,12 @@ double Solution::decode(vector<double>& variables) const {
 
     Solution sol = Solution({spec1, spec2, spec3}, 0.0);
 
-    if(type == 0) runClassic(sol, links, variables);
-    else if(type == 1) runDp(sol, links, variables);
-    else if(type == 3) runRandomDp(sol, links, variables);
-    else if(type == 4) runDpRebuild(sol, links, variables);
-    else if(type == 5) runNewHeuristic(sol, links, variables);
-    else if(type == 6) runLocalSearch(sol, links, variables);
+    if(type == "mic") runMic(sol, links, variables);
+    else if(type == "dp") runDp(sol, links, variables);
+    else if(type == "gcsid") runGcsid(sol, links, variables);
+    else if(type == "gcsid_plus") runGcsidPlus(sol, links, variables);
+    else if(type == "gcsid_greedy") runGcsidGreedy(sol, links, variables);
+    else if(type == "local_search") runLocalSearch(sol, links, variables);
 
     if (!checkFeasibility(sol, n/2)) {
         cout << "Solucao Inviável Detectada!" << endl;

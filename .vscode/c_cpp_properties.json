@@ -1,0 +1,28 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "Linux",
+
+            // Primary source of truth: CMake writes this file because the root
+            // CMakeLists.txt sets CMAKE_EXPORT_COMPILE_COMMANDS ON. It carries
+            // the exact flags each translation unit is compiled with.
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+
+            // Fallback for files not in the database yet (new headers, new
+            // tests, or a workspace opened before `cmake -S . -B build` runs).
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/extern/mtrand",
+                "${workspaceFolder}/extern/brkga",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/tests"
+            ],
+
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ]
+}
