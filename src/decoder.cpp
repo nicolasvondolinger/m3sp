@@ -31,6 +31,7 @@ double Solution::decode(vector<double>& variables) const {
     Solution sol = Solution({spec1, spec2, spec3}, 0.0);
 
     if(type == "mic") runMic(sol, links, variables);
+    else if(type == "mic_ls") runMicLs(sol, links, variables);
     else if(type == "dp") runDp(sol, links, variables);
     else if(type == "gcsid") runGcsid(sol, links, variables);
     else if(type == "gcsid_plus") runGcsidPlus(sol, links, variables);

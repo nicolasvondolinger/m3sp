@@ -38,6 +38,7 @@ set(M3SP_CORE_SOURCES
     src/decoder/dp.cpp
     src/decoder/gcsid.cpp
     src/decoder/gcsid_plus.cpp
+    src/decoder/gcsid_plus_ls.cpp
     src/decoder/gcsid_greedy.cpp
     src/decoder/local_search.cpp)
 

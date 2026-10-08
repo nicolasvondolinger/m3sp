@@ -24,7 +24,7 @@ const unsigned MAX_GENS = 1000;
 const bool USE_ELITE_LS = true;
 
 // Heuristicas aceitas em argv[1]; devem casar com o dispatch em decoder.cpp.
-const vector<string> KNOWN_TYPES = {"mic", "dp", "gcsid", "gcsid_plus", "gcsid_greedy", "local_search"};
+const vector<string> KNOWN_TYPES = {"mic", "mic_ls", "dp", "gcsid", "gcsid_plus", "gcsid_greedy", "local_search"};
 
 const fs::path INSTANCES_ROOT = "../instances";
 
@@ -83,6 +83,7 @@ void init(const fs::path& instancePath, FILE **solutionFile, FILE **objectivesFi
     // ../output/<instance-set>/output_<type>_<pe>/<nConnections>
     const string base = "../output/" + instanceSet + "/output_";
     if(type == "mic") outputDir = base + "mic_" + aux + '/' + to_string(nConnections);
+    else if(type == "mic_ls") outputDir = base + "mic_ls_" + aux + '/' + to_string(nConnections);
     else if(type == "dp") outputDir = base + "dp_" + aux + '/' + to_string(nConnections);
     else if(type == "gcsid") outputDir = base + "gcsid_" + aux + '/' + to_string(nConnections);
     else if(type == "gcsid_plus") outputDir = base + "gcsid_plus_" + aux + '/' + to_string(nConnections);

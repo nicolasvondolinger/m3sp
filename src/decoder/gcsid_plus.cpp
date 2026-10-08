@@ -1,4 +1,5 @@
 #include "m3sp/decoder/gcsid_plus.h"
+#include "m3sp/decoder/gcsid_plus_ls.h"
 
 // GCSID+ : mesma heuristica do GCSID, executada de outro jeito.
 //
@@ -14,9 +15,13 @@
 //   GCSID+  le a interferencia ja acumulada em cada membro e faz uma unica
 //           passada linear, sem copiar nada e sem alocar.
 //
-// Como as somas sao acumuladas na mesma ordem, o resultado e identico bit a
-// bit: os dois decoders devem produzir o mesmo throughput para o mesmo
-// cromossomo e a mesma semente. A diferenca aparece so no tempo.
+// Como as somas sao acumuladas na mesma ordem, a construcao e identica bit a
+// bit: para o mesmo cromossomo e a mesma semente, os dois constroem a mesma
+// solucao.
+//
+// Depois da construcao, o GCSID+ aplica uma busca local (gcsid_plus_ls.cpp)
+// que so pode melhorar a solucao; por isso o decoder completo devolve um
+// throughput maior ou igual ao do GCSID.
 
 namespace {
 
@@ -238,4 +243,8 @@ void runGcsidPlus(Solution& sol, vector<vector<double>>& links, vector<double>& 
 
     // Comentado para acompanhar o estado atual do GCSID (gcsid.cpp:96).
     // sol = applyFusion(sol);
+
+    // Passo de melhoria: a construcao acima fica intacta; a busca local parte
+    // da solucao que ela produziu (ver gcsid_plus_ls.cpp).
+    localSearchGcsidPlus(sol, links);
 }

@@ -40,9 +40,10 @@ The type selects the decoding heuristic:
 | Type | Decoder |
 | --- | --- |
 | `mic` | Two-phase constructive heuristic |
+| `mic_ls` | `mic` construction followed by the same local search as `gcsid_plus` (`gcsid_plus_ls.cpp`) |
 | `dp` | `mic` followed by the DP channel-split pass |
 | `gcsid` | Best-channel insertion plus channel fusion |
-| `gcsid_plus` | `gcsid` with tie-broken ordering, allocation-free candidate pricing and a greedy split |
+| `gcsid_plus` | `gcsid` construction (allocation-free candidate pricing) followed by a VND local search: link relocation/insertion/removal, then swaps with interfering neighbours (`gcsid_plus_ls.cpp`) |
 | `local_search` | `gcsid` plus a relocation local search |
 
 Results land in `output/<instance-set>/output_<type>_<pe>/<n>/`, so runs of
@@ -92,6 +93,8 @@ m3sp/
 │       ├── mic.cpp     MIC construction heuristic
 │       ├── dp.cpp
 │       ├── gcsid.cpp
+│       ├── gcsid_plus.cpp
+│       ├── gcsid_plus_ls.cpp   local search run after the gcsid_plus construction
 │       └── local_search.cpp
 ├── instances/          problem instances read at run time
 └── tests/              unit tests

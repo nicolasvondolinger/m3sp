@@ -1,4 +1,5 @@
 #include "m3sp/decoder/mic.h"
+#include "m3sp/decoder/gcsid_plus_ls.h"
 
 static int convertBand(double value){
     if(value < 0.25) return 20;
@@ -109,4 +110,9 @@ void micConstruct(Solution& sol, vector<vector<double>>& links, vector<double>& 
 
 void runMic(Solution& sol, vector<vector<double>>& links, vector<double>& variables){
     micConstruct(sol, links, variables);
+}
+
+void runMicLs(Solution& sol, vector<vector<double>>& links, vector<double>& variables){
+    micConstruct(sol, links, variables);
+    localSearchGcsidPlus(sol, links);
 }
